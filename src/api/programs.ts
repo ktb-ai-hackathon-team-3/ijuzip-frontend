@@ -23,10 +23,14 @@ export async function getVerdict(
   extraAnswers?: Record<string, string>
 ): Promise<ProgramVerdict> {
   if (USE_MOCK_API) return mockGetVerdict(sid, token, pid, extraAnswers);
+  // Values go through verbatim. Lower-casing them turned `visaStatus: 'F-6'`
+  // into `'f-6'`, which the backend compares exactly against the program's
+  // allow-list — a recheck could flip a PASS into a FAIL. The backend already
+  // parses `true`/`false` case-insensitively, so nothing needed the transform.
   const data = extraAnswers && Object.keys(extraAnswers).length > 0
     ? await apiFetch<BackendResult>(`/v1/sessions/${sid}/programs/${pid}/recheck`, {
         method: 'POST', token,
-        body: { extraAnswers: Object.fromEntries(Object.entries(extraAnswers).map(([key, value]) => [key, value.toLowerCase()])) },
+        body: { extraAnswers },
       })
     : await apiFetch<BackendResult>(`/v1/programs/${pid}`, { token });
   return verdictFromBackend(data);

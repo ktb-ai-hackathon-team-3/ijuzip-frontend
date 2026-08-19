@@ -53,6 +53,21 @@ export interface GeneratePdfResult {
   blob: Blob;
   filename: string;
   unverifiedFields: string[];
+  /**
+   * Fields the backend could not render: the bundled fonts had no glyph for
+   * some character, so PDFBox stamped `?` instead of failing the whole render.
+   * The paper the user hands over a counter is wrong in a way they cannot see
+   * from the download alone, so this has to surface in the UI.
+   *
+   * Requires `X-Unrenderable-Fields` in the CORS `Access-Control-Expose-Headers`
+   * allowlist — without it the browser strips the header and this is always
+   * empty even though the server sent it.
+   */
+  unrenderableFields: string[];
+}
+
+function headerList(headers: Headers, name: string): string[] {
+  return (headers.get(name) ?? '').split(',').filter(Boolean);
 }
 
 function filenameFromContentDisposition(headerValue: string | null): string {
@@ -70,9 +85,13 @@ function filenameFromContentDisposition(headerValue: string | null): string {
 export async function generateApplicationPdf(appId: string, token: string): Promise<GeneratePdfResult> {
   if (USE_MOCK_API) {
     const { blob, unverifiedFields } = await mockGeneratePdf(appId, token);
-    return { blob, filename: `application-${appId}.pdf`, unverifiedFields };
+    return { blob, filename: `application-${appId}.pdf`, unverifiedFields, unrenderableFields: [] };
   }
   const { blob, headers } = await apiFetchBlob(`/v1/applications/${appId}/pdf`, { method: 'POST', token });
-  const unverifiedFields = (headers.get('X-Unconfirmed-Fields') ?? '').split(',').filter(Boolean);
-  return { blob, filename: filenameFromContentDisposition(headers.get('Content-Disposition')), unverifiedFields };
+  return {
+    blob,
+    filename: filenameFromContentDisposition(headers.get('Content-Disposition')),
+    unverifiedFields: headerList(headers, 'X-Unconfirmed-Fields'),
+    unrenderableFields: headerList(headers, 'X-Unrenderable-Fields'),
+  };
 }

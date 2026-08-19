@@ -10,6 +10,7 @@ import { StatusBadge } from '../common/StatusBadge';
 import { useProgramDetail } from '../../hooks/useProgramDetail';
 import { useCreateApplicationMutation } from '../../hooks/useApplicationFlow';
 import { getVerdict } from '../../api/programs';
+import { incomeBandToBackend } from '../../api/backendAdapters';
 import { useSessionStore } from '../../stores/sessionStore';
 import { useUiStore } from '../../stores/uiStore';
 import { INCOME_BAND_OPTIONS } from '../../i18n/optionData';
@@ -44,7 +45,10 @@ export function ProgramDetailModal({ programId }: ProgramDetailModalProps) {
 
   const [incomeBand, setIncomeBand] = useState('');
   const extraAnswerMutation = useMutation({
-    mutationFn: (band: string) => getVerdict(sessionId as string, token as string, programId, { incomeBand: band }),
+    mutationFn: (band: string) =>
+      getVerdict(sessionId as string, token as string, programId, {
+        incomeBand: incomeBandToBackend(band) as string,
+      }),
     onSuccess: (data) => {
       queryClient.setQueryData(['verdict', sessionId, programId], data);
     },

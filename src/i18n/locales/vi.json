@@ -131,7 +131,8 @@
       "error": "Tạo PDF thất bại"
     },
     "retry": "Thử lại",
-    "downloadAgain": "Tải lại"
+    "downloadAgain": "Tải lại",
+    "unrenderableWarning": "Một số ký tự không in được trên biểu mẫu và đã hiển thị thành dấu hỏi (?). Vui lòng kiểm tra các mục sau: {{fields}}"
   },
   "errors": {
     "sessionCreateFailed": "Không thể tạo phiên làm việc. Vui lòng thử lại.",

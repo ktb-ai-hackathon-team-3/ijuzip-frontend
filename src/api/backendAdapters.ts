@@ -31,6 +31,18 @@ interface BackendProfile {
   householdSize?: number | null;
   incomeBand?: string | null;
   employment?: { employed?: boolean | null } | null;
+  childBirthDate?: string | null;
+  injuryDate?: string | null;
+}
+
+/**
+ * `IncomeBand` codes are uppercase on this side (`M_0_100`) and lowercase on
+ * Spring's (`m_0_100`). Both onboarding and the detail-modal recheck send this
+ * value, so the conversion lives in one place — they drifted apart once already,
+ * with recheck sending the uppercase code straight through.
+ */
+export function incomeBandToBackend(code: string | null | undefined) {
+  return code ? code.toLowerCase() : null;
 }
 
 export function trackToBackend(track: Track) {
@@ -63,11 +75,16 @@ export function toBackendSessionRequest(req: { language: Language; track: Track;
       registered: null,
       residencyMonths: null,
       householdSize: req.profile.householdSize,
-      incomeBand: req.profile.incomeBand?.toLowerCase() ?? null,
+      incomeBand: incomeBandToBackend(req.profile.incomeBand),
       employment: req.track === 'LABOR_INJURY'
         ? { employed: req.profile.employmentStatus !== 'UNEMPLOYED', insured: null }
         : null,
       healthInsurance: null,
+      // The dates the user actually typed. `children[].ageMonths` is derived
+      // from `childBirthDate` and cannot be inverted, and `injuryDate` was not
+      // sent at all — so after a refresh both form fields came back empty.
+      childBirthDate: req.track === 'BIRTH_CARE' ? req.profile.childBirthDate : null,
+      injuryDate: req.track === 'LABOR_INJURY' ? req.profile.injuryDate : null,
     },
   };
 }
@@ -141,12 +158,12 @@ function profileFromBackend(raw: BackendProfile, track: Track): Profile {
     region: { sido: raw.region.sido, sigungu: raw.region.sigungu ?? '' },
     gender: null,
     birthYear: null,
-    childBirthDate: null,
+    childBirthDate: raw.childBirthDate ?? null,
     childNationality: raw.children?.[0]?.nationality ?? null,
     householdSize: raw.householdSize ?? null,
     incomeBand: raw.incomeBand ? raw.incomeBand.toUpperCase() as Profile['incomeBand'] : null,
     employmentStatus: raw.employment?.employed == null ? null : raw.employment.employed ? 'EMPLOYED' : 'UNEMPLOYED',
-    injuryDate: null,
+    injuryDate: raw.injuryDate ?? null,
   };
 }
 

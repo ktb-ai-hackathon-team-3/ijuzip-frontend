@@ -131,7 +131,8 @@
       "error": "PDF 생성에 실패했어요"
     },
     "retry": "다시 시도",
-    "downloadAgain": "다시 다운로드"
+    "downloadAgain": "다시 다운로드",
+    "unrenderableWarning": "일부 글자가 서식에 인쇄되지 않아 물음표(?)로 표시됐어요. 해당 칸을 확인해주세요: {{fields}}"
   },
   "errors": {
     "sessionCreateFailed": "세션을 만들지 못했어요. 다시 시도해주세요.",

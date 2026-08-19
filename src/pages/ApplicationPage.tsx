@@ -63,10 +63,26 @@ export function ApplicationPage() {
     }
   }
 
+  /** Field keys are backend identifiers; show the user the localized label. */
+  function labelFor(key: string) {
+    return applicationQuery.data?.fieldLabels[key]?.user ?? key;
+  }
+
   async function handleConfirmPdf() {
     try {
-      await pdfMutation.mutateAsync();
+      const { unrenderableFields } = await pdfMutation.mutateAsync();
       pushToast(t('pdf.status.downloading'));
+      // The PDF downloaded fine, but some characters had no glyph in the
+      // bundled fonts and were stamped as `?`. The user cannot tell from the
+      // download alone that the paper they hand over a counter is wrong.
+      if (unrenderableFields.length > 0) {
+        pushToast(
+          t('pdf.unrenderableWarning', {
+            fields: unrenderableFields.map((key) => labelFor(key)).join(', '),
+          }),
+          'error'
+        );
+      }
       closePdfConfirm();
     } catch {
       // PdfConfirmModal reads pdfMutation status via isError, stays open to let the user retry.

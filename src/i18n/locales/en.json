@@ -131,7 +131,8 @@
       "error": "Failed to generate PDF"
     },
     "retry": "Retry",
-    "downloadAgain": "Download again"
+    "downloadAgain": "Download again",
+    "unrenderableWarning": "Some characters could not be printed on the form and were replaced with a question mark (?). Please check these fields: {{fields}}"
   },
   "errors": {
     "sessionCreateFailed": "Couldn't create a session. Please try again.",
