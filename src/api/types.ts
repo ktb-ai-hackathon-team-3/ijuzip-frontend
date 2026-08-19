@@ -234,6 +234,8 @@ export interface SessionSnapshot {
   messages: Message[];
   lastSeq: number;
   latestApplicationId: string | null;
+  /** Backend assessment lifecycle; used to resume polling after a refresh. */
+  assessmentStatus?: string;
 }
 
 /** §4 SSE 이벤트 페이로드. */

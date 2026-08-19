@@ -101,7 +101,25 @@ export function buildCreateSessionResponse(
   const greetingKo = track === 'BIRTH_CARE'
     ? '입력하신 정보를 바탕으로 받을 수 있는 출산·돌봄 제도를 찾아봤어요.'
     : '입력하신 정보를 바탕으로 도움받을 수 있는 근로·산재 제도를 찾아봤어요.';
-  const greetingUser = language === 'ko' ? greetingKo : greetingKo;
+  const greetingUserByLanguage: Record<Language, Record<Track, string>> = {
+    ko: {
+      BIRTH_CARE: '입력하신 정보를 바탕으로 받을 수 있는 출산·돌봄 제도를 찾아봤어요.',
+      LABOR_INJURY: '입력하신 정보를 바탕으로 도움받을 수 있는 근로·산재 제도를 찾아봤어요.',
+    },
+    vi: {
+      BIRTH_CARE: 'Dựa trên thông tin bạn cung cấp, tôi đã tìm các chương trình hỗ trợ sinh con và chăm sóc trẻ phù hợp.',
+      LABOR_INJURY: 'Dựa trên thông tin bạn cung cấp, tôi đã tìm các chương trình hỗ trợ việc làm và tai nạn lao động phù hợp.',
+    },
+    km: {
+      BIRTH_CARE: 'ផ្អែកលើព័ត៌មានដែលអ្នកបានផ្តល់ ខ្ញុំបានស្វែងរកកម្មវិធីជំនួយសម្រាប់ការសម្រាលកូន និងការថែទាំកុមារ។',
+      LABOR_INJURY: 'ផ្អែកលើព័ត៌មានដែលអ្នកបានផ្តល់ ខ្ញុំបានស្វែងរកកម្មវិធីជំនួយសម្រាប់ការងារ និងគ្រោះថ្នាក់ការងារ។',
+    },
+    en: {
+      BIRTH_CARE: 'Based on your information, I found birth and childcare support programs that may fit your situation.',
+      LABOR_INJURY: 'Based on your information, I found employment and workplace-injury support programs that may fit your situation.',
+    },
+  };
+  const greetingUser = greetingUserByLanguage[language][track];
   return {
     ...session,
     greeting: { ko: greetingKo, user: greetingUser },
@@ -164,6 +182,7 @@ export function snapshotFromBackend(raw: any): SessionSnapshot {
     profile: profileFromBackend(raw.profile, track), track, candidates, view,
     messages: (raw.messages ?? []).map(messageFromBackend), lastSeq: raw.lastSeq ?? 0,
     latestApplicationId: raw.latestApplicationId ?? null,
+    assessmentStatus: raw.assessment?.status,
   };
 }
 

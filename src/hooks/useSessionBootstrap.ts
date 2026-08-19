@@ -19,6 +19,10 @@ export function useSessionBootstrap(): BootstrapStatus {
   useEffect(() => {
     let cancelled = false;
 
+    const waitForNextPoll = () => new Promise<void>((resolve) => {
+      window.setTimeout(resolve, 3000);
+    });
+
     async function run() {
       hydrateFromStorage();
       const { token, sessionId } = useSessionStore.getState();
@@ -28,9 +32,20 @@ export function useSessionBootstrap(): BootstrapStatus {
       }
       setStatus('restoring');
       try {
-        const snapshot = await getSession(sessionId, token);
+        let snapshot = await getSession(sessionId, token);
         if (cancelled) return;
         restoreSnapshot(snapshot);
+
+        // The backend may still be assessing candidates when the page is
+        // refreshed. Keep the restored screen alive and refresh server state
+        // until the assessment leaves `pending`, as defined by the contract.
+        while (!cancelled && snapshot.assessmentStatus === 'pending') {
+          await waitForNextPoll();
+          if (cancelled) return;
+          snapshot = await getSession(sessionId, token);
+          if (cancelled) return;
+          restoreSnapshot(snapshot);
+        }
         setStatus('ready');
       } catch (err) {
         if (cancelled) return;

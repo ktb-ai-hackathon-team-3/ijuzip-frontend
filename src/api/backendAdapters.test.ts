@@ -30,13 +30,14 @@ describe('backend v0.6 adapters', () => {
     expect(response.funnel.returned).toBe(1);
     expect(response.candidates[0]).toMatchObject({ programId: 'first-meet-voucher', conditionStatus: 'NEED_INFO' });
     expect(response.candidates[0].missingSlots).toEqual(['registered']);
+    expect(response.greeting.user).toContain('Dựa trên');
   });
 
   it('converts Redis session snapshots and messages', () => {
     const snapshot = snapshotFromBackend({
       track: 'birth_care',
       profile: { lang: 'vi', region: { sido: '경기도', sigungu: '안산시' }, visaStatus: 'F-6', children: [{ ageMonths: 1, nationality: 'KR' }] },
-      assessment: { results: [{ recordId: 'child-allowance', status: 'eligible' }] },
+      assessment: { status: 'pending', results: [{ recordId: 'child-allowance', status: 'eligible' }] },
       view: { ranking: [{ recordId: 'child-allowance', score: 0.9 }], viewFilter: {}, visibleCount: 1 },
       messages: [{ seq: 2, role: 'assistant', textKo: '답변', textLocal: 'Trả lời', createdAt: '2026-08-19T00:00:00Z', intent: 'question', citedRecords: ['child-allowance'] }],
       lastSeq: 2,
@@ -44,6 +45,7 @@ describe('backend v0.6 adapters', () => {
     expect(snapshot.track).toBe('BIRTH_CARE');
     expect(snapshot.view.ranking[0].programId).toBe('child-allowance');
     expect(snapshot.messages[0]).toMatchObject({ role: 'assistant', citedPrograms: ['child-allowance'] });
+    expect(snapshot.assessmentStatus).toBe('pending');
   });
 
   it('maps program and application field names without leaking backend shapes into UI', () => {
