@@ -1,0 +1,111 @@
+/**
+ * Design tokens ported from ijuzip-app.html (the approved prototype).
+ * Restrained green brand, warm off-white ground, neutral sidebar,
+ * limited shadow/radius use. See CLAUDE_FRONTEND_PROMPT.md §16.
+ */
+:root {
+  --green-900: #0f3d2e;
+  --green-700: #1f6b4a;
+  --green-600: #2a7d57;
+  --green-50: #edf4ef;
+  --green-100: #daeae0;
+
+  --bg: #faf9f5;
+  --surface: #ffffff;
+  --sidebar-bg: #f3f2ec;
+
+  --text: #20241f;
+  --text-muted: #686f66;
+  --text-faint: #9a9d92;
+
+  --border: #e3e1d6;
+  --border-strong: #d3d0c3;
+
+  --amber: #a15c07;
+  --amber-bg: #f7ecd9;
+  --red: #b3261e;
+  --red-bg: #fbeceb;
+
+  --shadow-sm: 0 1px 3px rgba(20, 24, 18, 0.07), 0 1px 2px rgba(20, 24, 18, 0.05);
+  --shadow: 0 4px 16px rgba(20, 24, 18, 0.10), 0 1px 3px rgba(20, 24, 18, 0.08);
+  --shadow-md: 0 8px 24px rgba(15, 61, 46, 0.14), 0 2px 6px rgba(20, 24, 18, 0.08);
+  --shadow-lg: 0 20px 48px rgba(15, 61, 46, 0.22), 0 6px 16px rgba(15, 61, 46, 0.12);
+  --overlay: rgba(15, 20, 15, 0.45);
+
+  --radius-sm: 8px;
+  --radius-md: 10px;
+  --radius-lg: 16px;
+
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 20px;
+  --space-6: 24px;
+  --space-8: 32px;
+
+  --font-sans: 'Inter', 'Noto Sans KR', 'Noto Sans SC', 'Noto Sans Khmer', system-ui, -apple-system,
+    sans-serif;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme='light']) {
+    --green-900: #3fae7c;
+    --green-700: #57c393;
+    --green-600: #2f8f65;
+    --green-50: #182620;
+    --green-100: #1f3229;
+
+    --bg: #141712;
+    --surface: #1b1f19;
+    --sidebar-bg: #181b16;
+
+    --text: #edf0e8;
+    --text-muted: #9aa294;
+    --text-faint: #70776a;
+
+    --border: #2c3128;
+    --border-strong: #3a4033;
+
+    --amber: #e0a94f;
+    --amber-bg: #2e2717;
+    --red: #e5847c;
+    --red-bg: #2c1a18;
+
+    --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.3);
+    --shadow: 0 4px 18px rgba(0, 0, 0, 0.4), 0 1px 4px rgba(0, 0, 0, 0.3);
+    --shadow-md: 0 10px 28px rgba(0, 0, 0, 0.45);
+    --shadow-lg: 0 22px 50px rgba(0, 0, 0, 0.55), 0 8px 20px rgba(0, 0, 0, 0.35);
+    --overlay: rgba(0, 0, 0, 0.6);
+  }
+}
+
+:root[data-theme='dark'] {
+  --green-900: #3fae7c;
+  --green-700: #57c393;
+  --green-600: #2f8f65;
+  --green-50: #182620;
+  --green-100: #1f3229;
+
+  --bg: #141712;
+  --surface: #1b1f19;
+  --sidebar-bg: #181b16;
+
+  --text: #edf0e8;
+  --text-muted: #9aa294;
+  --text-faint: #70776a;
+
+  --border: #2c3128;
+  --border-strong: #3a4033;
+
+  --amber: #e0a94f;
+  --amber-bg: #2e2717;
+  --red: #e5847c;
+  --red-bg: #2c1a18;
+
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.3);
+  --shadow: 0 4px 18px rgba(0, 0, 0, 0.4), 0 1px 4px rgba(0, 0, 0, 0.3);
+  --shadow-md: 0 10px 28px rgba(0, 0, 0, 0.45);
+  --shadow-lg: 0 22px 50px rgba(0, 0, 0, 0.55), 0 8px 20px rgba(0, 0, 0, 0.35);
+  --overlay: rgba(0, 0, 0, 0.6);
+}

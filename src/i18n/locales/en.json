@@ -1,0 +1,163 @@
+{
+  "app": { "name": "IJU.zip" },
+  "language": {
+    "title1": "Hi, I'm IJU.zip.",
+    "title2": "How can I help you today?",
+    "subtitle1": "Please choose your preferred language.",
+    "subtitle2": "We'll help you find welfare programs that fit your situation and support you through applying.",
+    "startBtn": "Start in the selected language"
+  },
+  "onboarding": {
+    "badge": "About 1 minute",
+    "title1": "To find the right support for you,",
+    "title2": "please share some basic information",
+    "subtitle": "Your information is used to match you with the right programs.",
+    "trackHint": "Fill in whichever of these applies to you — you can skip the other.",
+    "sectionBirth": "Pregnancy · Birth · Childcare",
+    "sectionLabor": "Workplace injury · Employment",
+    "optionalTag": "optional",
+    "back": "Back",
+    "submit": "Find matching welfare programs",
+    "submitting": "Searching…",
+    "fields": {
+      "visaStatus": "Residence status (visa)",
+      "region": "Region",
+      "sido": "Province / metropolitan city",
+      "sigungu": "City / county / district",
+      "childBirthDate": "Child's (expected) birth date",
+      "childNationality": "Child's nationality",
+      "householdSize": "Household size",
+      "incomeBand": "Household income band",
+      "employmentStatus": "Employment type",
+      "injuryDate": "Date of accident/injury"
+    },
+    "placeholders": {
+      "select": "Please select",
+      "date": "YYYY-MM-DD"
+    },
+    "skipTag": "Skip",
+    "atLeastOne": "Please fill in at least one of the two sections above."
+  },
+  "sidebar": {
+    "returnToChat": "Current AI welfare chat",
+    "sectionLabel": "Support for you",
+    "showMore": "Show more",
+    "showLess": "Show less",
+    "privacy": "Privacy notice",
+    "help": "Help",
+    "conditionStatus": {
+      "LIKELY": "Likely eligible",
+      "NEED_INFO": "Needs info",
+      "BLOCKED": "Not eligible"
+    },
+    "filterChipClear": "Clear filter",
+    "emptyState": "No recommended programs yet. Start chatting with the AI.",
+    "applicationInProgress": "Application in progress"
+  },
+  "chat": {
+    "title": "AI welfare chat",
+    "inputPlaceholder": "Type your message…",
+    "send": "Send",
+    "quickReplyDefault": "Learn more",
+    "citedProgramsLabel": "Related programs",
+    "thinking": {
+      "label": "Thinking"
+    },
+    "retry": "Retry",
+    "errorGeneric": "Couldn't get a reply. Please try again.",
+    "errorTimeout": "The response is taking a while. Please try again shortly.",
+    "errorLocked": "Still processing the previous message. Please wait a moment.",
+    "connectionLost": "Connection lost. Please try again."
+  },
+  "welfare": {
+    "matchLabel": "Match",
+    "modal": {
+      "verdict": {
+        "ELIGIBLE": "Eligible to apply",
+        "NEEDS_CHECK": "Needs confirmation",
+        "NOT_ELIGIBLE": "Not eligible"
+      },
+      "confidenceLabel": "Confidence",
+      "reason": "Reason",
+      "benefit": "Benefit",
+      "unmetConditions": "Condition status",
+      "applicationChannel": "How to apply",
+      "applicationOrg": "Handling organization",
+      "requiredDocuments": "Required documents",
+      "deadline": "Application deadline",
+      "sourceOriginal": "Original Korean text",
+      "sourceLink": "View source",
+      "lastVerified": "Last verified",
+      "verdictLoading": "AI is checking your eligibility…",
+      "verdictError": "Couldn't complete the assessment. Please contact the responsible organization directly.",
+      "extraQuestionTitle": "A few more questions",
+      "disclaimer": "The responsible organization makes the final decision. Please confirm before actually applying.",
+      "close": "Close",
+      "goToApplication": "Start the application",
+      "channel": { "VISIT": "In-person application", "ONLINE": "Online application", "MAIL": "Mail application" }
+    }
+  },
+  "application": {
+    "formIdMismatch": "Couldn't create the application. Please try again.",
+    "title": "Fill out application",
+    "returnToChat": "Back to current AI welfare chat",
+    "aiFilledBanner": "AI pre-filled this based on your profile",
+    "status": {
+      "FILLED": "Auto-filled",
+      "UNVERIFIED": "Needs confirmation",
+      "MISSING": "Needs input",
+      "PROTECTED": "Needs your input",
+      "PROTECTED_PREFILLED": "Needs confirmation"
+    },
+    "protectedNotice": "Sensitive information is only used on this screen and is never sent to the AI.",
+    "generatePdf": "Generate PDF",
+    "generatingPdf": "Generating…",
+    "notReadyForPdf": "Please fill in the required fields before generating the PDF.",
+    "checkedProgramsLabel": "Included programs"
+  },
+  "pdf": {
+    "confirmTitle": "Please confirm before generating the PDF",
+    "unverifiedWarning": "Some items haven't been confirmed yet. Please double-check the content after generating.",
+    "signNotice": "You'll need to print the PDF and sign it by hand.",
+    "verifyNotice": "Please confirm the latest conditions with the responsible organization before submitting.",
+    "identityNotice": "To protect your personal information, sensitive data may be deleted after the application is generated. Regenerating it may require re-entering some information.",
+    "cancel": "Cancel",
+    "confirm": "Generate PDF",
+    "status": {
+      "verifying": "Confirming…",
+      "generating": "Generating…",
+      "downloading": "Starting download…",
+      "done": "Done",
+      "error": "Failed to generate PDF"
+    },
+    "retry": "Retry",
+    "downloadAgain": "Download again"
+  },
+  "errors": {
+    "sessionCreateFailed": "Couldn't create a session. Please try again.",
+    "sessionExpired": "Your session has expired. Please start over.",
+    "candidatesFailed": "Couldn't load the recommendation list.",
+    "verdictFailed": "The detailed assessment failed.",
+    "translationFailed": "Translation failed, showing the original Korean text.",
+    "applicationCreateFailed": "Couldn't create the application.",
+    "fieldValidationFailed": "Please double-check the information you entered.",
+    "pdfFailed": "Failed to generate the PDF.",
+    "networkLost": "Please check your network connection.",
+    "goToStart": "Back to start"
+  },
+  "validation": {
+    "required": "This field is required."
+  },
+  "common": {
+    "close": "Close",
+    "back": "Back",
+    "next": "Next",
+    "loading": "Loading…",
+    "retry": "Retry",
+    "cancel": "Cancel",
+    "confirm": "Confirm",
+    "openSidebar": "Open sidebar",
+    "toggleSidebar": "Toggle sidebar",
+    "new": "New"
+  }
+}

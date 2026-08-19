@@ -1,0 +1,229 @@
+import type {
+  Application, ApplicationField, Candidate, CreateSessionResponse, Language, Message,
+  Profile, ProgramDetail, ProgramVerdict, SessionSnapshot, SidebarView, Track,
+} from './types';
+
+export interface BackendResult {
+  recordId: string;
+  nameKo?: string;
+  nameLocal?: string;
+  status?: string;
+  amountDescKo?: string;
+  amountDescLocal?: string;
+  reasonKo?: string;
+  reasonLocal?: string;
+  checks?: Array<{ field: string; fieldLabelKo: string; required?: string; actual?: string; result: string }>;
+  sourceSnippet?: string;
+  sourceUrl?: string;
+  lawReference?: string;
+  requiredDocuments?: string[];
+  lastVerified?: string;
+  deadlineDesc?: string;
+  formId?: string;
+  formCheckbox?: string;
+}
+
+interface BackendProfile {
+  lang: string;
+  region: { sido: string; sigungu?: string };
+  visaStatus: string;
+  children?: Array<{ ageMonths?: number; nationality?: string }>;
+  householdSize?: number | null;
+  incomeBand?: string | null;
+  employment?: { employed?: boolean | null } | null;
+}
+
+export function trackToBackend(track: Track) {
+  return track === 'BIRTH_CARE' ? 'birth_care' : 'labor_injury';
+}
+
+export function trackFromBackend(track: string): Track {
+  return track.toLowerCase() === 'labor_injury' ? 'LABOR_INJURY' : 'BIRTH_CARE';
+}
+
+function monthsSince(dateText: string | null): number | null {
+  if (!dateText) return null;
+  const date = new Date(`${dateText}T00:00:00`);
+  if (Number.isNaN(date.getTime())) return null;
+  const now = new Date();
+  return Math.max(0, (now.getFullYear() - date.getFullYear()) * 12 + now.getMonth() - date.getMonth());
+}
+
+export function toBackendSessionRequest(req: { language: Language; track: Track; profile: Omit<Profile, 'track' | 'language'> }) {
+  return {
+    track: trackToBackend(req.track),
+    profile: {
+      lang: req.language,
+      region: req.profile.region,
+      visaStatus: req.profile.visaStatus,
+      spouseIsKorean: null,
+      children: req.track === 'BIRTH_CARE'
+        ? [{ ageMonths: monthsSince(req.profile.childBirthDate), nationality: req.profile.childNationality }]
+        : [],
+      registered: null,
+      residencyMonths: null,
+      householdSize: req.profile.householdSize,
+      incomeBand: req.profile.incomeBand?.toLowerCase() ?? null,
+      employment: req.track === 'LABOR_INJURY'
+        ? { employed: req.profile.employmentStatus !== 'UNEMPLOYED', insured: null }
+        : null,
+      healthInsurance: null,
+    },
+  };
+}
+
+function statusToCandidate(status?: string): Candidate['conditionStatus'] {
+  if (status === 'not_eligible' || status === 'blocked') return 'BLOCKED';
+  if (status === 'eligible' || status === 'likely') return 'LIKELY';
+  return 'NEED_INFO';
+}
+
+export function resultsToCandidates(results: BackendResult[]): Candidate[] {
+  return results.map((result, index) => ({
+    programId: result.recordId,
+    baseScore: Math.max(0.5, 0.95 - index * 0.04),
+    conditionStatus: statusToCandidate(result.status),
+    missingSlots: (result.checks ?? []).filter((check) => check.result === 'unknown').map((check) => check.field),
+  }));
+}
+
+export function skeletonToCandidates(raw: { candidates?: Array<{ recordId: string; status?: string }> }): Candidate[] {
+  return resultsToCandidates((raw.candidates ?? []).map((item) => ({ recordId: item.recordId, status: item.status })));
+}
+
+export function buildCreateSessionResponse(
+  session: { sessionId: string; token: string; expiresIn: number },
+  skeleton: { candidates?: Array<{ recordId: string; status?: string }>; funnel?: CreateSessionResponse['funnel'] },
+  results: BackendResult[] | null,
+  language: Language,
+  track: Track,
+): CreateSessionResponse {
+  const greetingKo = track === 'BIRTH_CARE'
+    ? '입력하신 정보를 바탕으로 받을 수 있는 출산·돌봄 제도를 찾아봤어요.'
+    : '입력하신 정보를 바탕으로 도움받을 수 있는 근로·산재 제도를 찾아봤어요.';
+  const greetingUser = language === 'ko' ? greetingKo : greetingKo;
+  return {
+    ...session,
+    greeting: { ko: greetingKo, user: greetingUser },
+    candidates: results ? resultsToCandidates(results) : skeletonToCandidates(skeleton),
+    funnel: {
+      total: skeleton.funnel?.total ?? 0,
+      afterTrack: skeleton.funnel?.afterTrack ?? 0,
+      afterFilter: skeleton.funnel?.afterFilter ?? 0,
+      returned: skeleton.funnel?.returned ?? skeleton.candidates?.length ?? 0,
+    },
+  };
+}
+
+function profileFromBackend(raw: BackendProfile, track: Track): Profile {
+  return {
+    track,
+    language: raw.lang as Language,
+    visaStatus: raw.visaStatus,
+    region: { sido: raw.region.sido, sigungu: raw.region.sigungu ?? '' },
+    gender: null,
+    birthYear: null,
+    childBirthDate: null,
+    childNationality: raw.children?.[0]?.nationality ?? null,
+    householdSize: raw.householdSize ?? null,
+    incomeBand: raw.incomeBand ? raw.incomeBand.toUpperCase() as Profile['incomeBand'] : null,
+    employmentStatus: raw.employment?.employed == null ? null : raw.employment.employed ? 'EMPLOYED' : 'UNEMPLOYED',
+    injuryDate: null,
+  };
+}
+
+function viewFromBackend(raw: any): SidebarView {
+  return {
+    ranking: (raw?.ranking ?? []).map((item: any) => ({ programId: item.recordId, score: item.score ?? 0 })),
+    viewFilter: raw?.viewFilter ?? {},
+    sortBy: 'relevance',
+    visibleCount: raw?.visibleCount ?? 5,
+  };
+}
+
+function messageFromBackend(raw: any): Message {
+  if (raw.role === 'user') return { seq: raw.seq, role: 'user', text: raw.textLocal ?? '', createdAt: raw.createdAt };
+  if (raw.role === 'system') return {
+    seq: raw.seq, role: 'system', text: { ko: raw.textKo ?? '', user: raw.textLocal ?? raw.textKo ?? '' },
+    createdAt: raw.createdAt, errorCode: raw.errorCode ?? 'UNKNOWN_ERROR',
+  };
+  return {
+    seq: raw.seq, role: 'assistant', text: { ko: raw.textKo ?? '', user: raw.textLocal ?? raw.textKo ?? '' },
+    createdAt: raw.createdAt, intent: String(raw.intent ?? 'question').toUpperCase() as 'QUESTION' | 'FILTER' | 'BOTH',
+    citedPrograms: raw.citedRecords ?? [],
+  };
+}
+
+export function snapshotFromBackend(raw: any): SessionSnapshot {
+  const track = trackFromBackend(raw.track);
+  const results: BackendResult[] = raw.assessment?.results ?? [];
+  const candidates = resultsToCandidates(results);
+  const view = viewFromBackend(raw.view);
+  if (view.ranking.length === 0) view.ranking = candidates.map((c) => ({ programId: c.programId, score: c.baseScore }));
+  return {
+    profile: profileFromBackend(raw.profile, track), track, candidates, view,
+    messages: (raw.messages ?? []).map(messageFromBackend), lastSeq: raw.lastSeq ?? 0,
+    latestApplicationId: raw.latestApplicationId ?? null,
+  };
+}
+
+const local = (ko = '', user?: string) => ({ ko, user: user ?? ko });
+
+export function programDetailFromBackend(raw: BackendResult): ProgramDetail {
+  return {
+    name: local(raw.nameKo, raw.nameLocal),
+    summary: local(raw.reasonKo, raw.reasonLocal),
+    benefit: local(raw.amountDescKo, raw.amountDescLocal),
+    conditionsText: (raw.checks ?? []).map((check) => local(check.fieldLabelKo)),
+    evidence: { sourceSnippet: raw.sourceSnippet ?? '', sourceUrl: raw.sourceUrl ?? '', lastVerified: raw.lastVerified ?? '' },
+    applicationChannel: 'VISIT', applicationOrg: local('관할 행정기관'),
+    requiredDocuments: (raw.requiredDocuments ?? []).map((doc) => local(doc)), deadline: raw.deadlineDesc ?? '',
+  };
+}
+
+export function verdictFromBackend(raw: BackendResult): ProgramVerdict {
+  const verdict = raw.status === 'eligible' ? 'ELIGIBLE' : raw.status === 'not_eligible' ? 'NOT_ELIGIBLE' : 'NEEDS_CHECK';
+  return {
+    programId: raw.recordId, verdict, confidence: verdict === 'NEEDS_CHECK' ? 0.5 : 0.9,
+    reason: local(raw.reasonKo, raw.reasonLocal),
+    unmetConditions: (raw.checks ?? []).map((check) => ({
+      condition: local(check.fieldLabelKo), userValue: check.actual ?? '',
+      status: check.result === 'pass' ? 'MET' : check.result === 'fail' ? 'UNMET' : 'UNKNOWN',
+    })),
+    benefit: local(raw.amountDescKo, raw.amountDescLocal),
+    evidence: { sourceSnippet: raw.sourceSnippet ?? '', sourceUrl: raw.sourceUrl ?? '', lastVerified: raw.lastVerified ?? '' },
+    applicationChannel: 'VISIT', applicationOrg: '관할 행정기관', formId: raw.formId ?? '',
+    formCheckbox: raw.formCheckbox ?? '', deadline: raw.deadlineDesc ?? '', judgedAt: new Date().toISOString(),
+  };
+}
+
+const protectedKeys = new Set(['applicantName', 'registrationNo', 'address', 'phone', 'bankName', 'accountNo']);
+
+function fieldFromBackend(key: string, raw: any, missing: string[]): ApplicationField {
+  const source = raw?.source;
+  const hasValue = raw?.value != null && String(raw.value).trim() !== '';
+  const status: ApplicationField['status'] = raw?.prefilled && protectedKeys.has(key) ? 'PROTECTED_PREFILLED'
+    : !hasValue && protectedKeys.has(key) ? 'PROTECTED'
+    : missing.includes(key) ? 'MISSING'
+    : source === 'unconfirmed' ? 'UNVERIFIED' : 'FILLED';
+  return { value: raw?.value ?? null, status, ...(raw?.prefilled || source === 'system' ? { sourceSlot: key } : {}) };
+}
+
+export function applicationFromBackend(raw: any): Application {
+  const missing = raw.missingRequired ?? [];
+  return {
+    applicationId: raw.applicationId, formId: raw.formId,
+    formTitle: local(raw.formTitleKo),
+    checkedPrograms: (raw.checkedRecords ?? []).map((item: any) => ({ programId: item.recordId, formCheckbox: item.formCheckbox })),
+    fields: Object.fromEntries(Object.entries(raw.fields ?? {}).map(([key, value]) => [key, fieldFromBackend(key, value, missing)])),
+    fieldLabels: Object.fromEntries(Object.entries(raw.fieldLabels ?? {}).map(([key, value]: [string, any]) => [key, local(value.ko, value.local)])),
+  };
+}
+
+export function patchFromBackend(raw: any) {
+  const missing: string[] = raw.missingRequired ?? [];
+  return {
+    fields: Object.fromEntries(Object.entries(raw.fields ?? {}).map(([key, value]) => [key, fieldFromBackend(key, value, missing)])),
+    readyForPdf: Boolean(raw.readyForPdf), missingRequired: missing,
+  };
+}

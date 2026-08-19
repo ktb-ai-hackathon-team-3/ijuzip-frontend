@@ -1,0 +1,163 @@
+{
+  "app": { "name": "IJU.zip" },
+  "language": {
+    "title1": "Xin chào, tôi là IJU.zip.",
+    "title2": "Tôi có thể giúp gì cho bạn hôm nay?",
+    "subtitle1": "Vui lòng chọn ngôn ngữ bạn muốn sử dụng.",
+    "subtitle2": "Chúng tôi sẽ giúp bạn tìm chương trình phúc lợi phù hợp và hỗ trợ nộp đơn.",
+    "startBtn": "Bắt đầu bằng ngôn ngữ đã chọn"
+  },
+  "onboarding": {
+    "badge": "Khoảng 1 phút",
+    "title1": "Để tìm hỗ trợ phù hợp với bạn,",
+    "title2": "vui lòng cho biết một số thông tin cơ bản",
+    "subtitle": "Thông tin của bạn sẽ được dùng để tìm chương trình phù hợp.",
+    "trackHint": "Chỉ cần điền mục nào phù hợp với tình huống của bạn trong hai mục dưới đây — có thể bỏ trống mục còn lại.",
+    "sectionBirth": "Mang thai · Sinh con · Nuôi con",
+    "sectionLabor": "Tai nạn lao động · Việc làm",
+    "optionalTag": "không bắt buộc",
+    "back": "Quay lại",
+    "submit": "Tìm phúc lợi phù hợp",
+    "submitting": "Đang tìm…",
+    "fields": {
+      "visaStatus": "Tình trạng cư trú (Visa)",
+      "region": "Khu vực sinh sống",
+      "sido": "Tỉnh / thành phố trực thuộc trung ương",
+      "sigungu": "Thành phố / quận / huyện",
+      "childBirthDate": "Ngày sinh của con",
+      "childNationality": "Quốc tịch của con",
+      "householdSize": "Số thành viên hộ gia đình",
+      "incomeBand": "Mức thu nhập hộ gia đình",
+      "employmentStatus": "Hình thức làm việc",
+      "injuryDate": "Ngày xảy ra tai nạn"
+    },
+    "placeholders": {
+      "select": "Vui lòng chọn",
+      "date": "Năm-Tháng-Ngày"
+    },
+    "skipTag": "Bỏ qua xác nhận",
+    "atLeastOne": "Vui lòng điền ít nhất một trong hai mục trên."
+  },
+  "sidebar": {
+    "returnToChat": "Tư vấn AI hiện tại",
+    "sectionLabel": "Hỗ trợ dành cho bạn",
+    "showMore": "Xem thêm",
+    "showLess": "Thu gọn",
+    "privacy": "Thông báo quyền riêng tư",
+    "help": "Trợ giúp",
+    "conditionStatus": {
+      "LIKELY": "Phù hợp",
+      "NEED_INFO": "Cần xác nhận",
+      "BLOCKED": "Không đủ điều kiện"
+    },
+    "filterChipClear": "Xóa bộ lọc",
+    "emptyState": "Chưa có chương trình nào được đề xuất. Hãy bắt đầu trò chuyện với AI.",
+    "applicationInProgress": "Đang soạn đơn đăng ký"
+  },
+  "chat": {
+    "title": "Tư vấn phúc lợi AI",
+    "inputPlaceholder": "Nhập tin nhắn của bạn…",
+    "send": "Gửi",
+    "quickReplyDefault": "Tìm hiểu thêm",
+    "citedProgramsLabel": "Chương trình liên quan",
+    "thinking": {
+      "label": "Đang suy nghĩ"
+    },
+    "retry": "Thử lại",
+    "errorGeneric": "Không thể lấy câu trả lời. Vui lòng thử lại.",
+    "errorTimeout": "Phản hồi đang bị chậm. Vui lòng thử lại sau.",
+    "errorLocked": "Đang xử lý tin nhắn trước đó. Vui lòng đợi trong giây lát.",
+    "connectionLost": "Kết nối bị gián đoạn. Vui lòng thử lại."
+  },
+  "welfare": {
+    "matchLabel": "Độ phù hợp",
+    "modal": {
+      "verdict": {
+        "ELIGIBLE": "Đủ điều kiện đăng ký",
+        "NEEDS_CHECK": "Cần xác nhận thêm",
+        "NOT_ELIGIBLE": "Không đủ điều kiện"
+      },
+      "confidenceLabel": "Độ tin cậy của đánh giá",
+      "reason": "Lý do đánh giá",
+      "benefit": "Nội dung hỗ trợ",
+      "unmetConditions": "Tình trạng đáp ứng điều kiện",
+      "applicationChannel": "Cách đăng ký",
+      "applicationOrg": "Cơ quan tiếp nhận",
+      "requiredDocuments": "Giấy tờ cần thiết",
+      "deadline": "Hạn đăng ký",
+      "sourceOriginal": "Văn bản gốc tiếng Hàn",
+      "sourceLink": "Xem nguồn",
+      "lastVerified": "Ngày xác nhận gần nhất",
+      "verdictLoading": "AI đang kiểm tra điều kiện của bạn…",
+      "verdictError": "Không thể đánh giá. Vui lòng liên hệ trực tiếp cơ quan phụ trách.",
+      "extraQuestionTitle": "Chúng tôi cần hỏi thêm vài điều",
+      "disclaimer": "Quyết định cuối cùng thuộc về cơ quan phụ trách. Vui lòng xác nhận trước khi nộp đơn thực tế.",
+      "close": "Đóng",
+      "goToApplication": "Bắt đầu soạn đơn đăng ký",
+      "channel": { "VISIT": "Đăng ký trực tiếp", "ONLINE": "Đăng ký trực tuyến", "MAIL": "Đăng ký qua thư" }
+    }
+  },
+  "application": {
+    "formIdMismatch": "Không thể tạo đơn đăng ký. Vui lòng thử lại.",
+    "title": "Soạn đơn đăng ký",
+    "returnToChat": "Quay lại tư vấn AI hiện tại",
+    "aiFilledBanner": "AI đã tự động điền dựa trên hồ sơ của bạn",
+    "status": {
+      "FILLED": "Đã tự động điền",
+      "UNVERIFIED": "Cần xác nhận",
+      "MISSING": "Cần nhập",
+      "PROTECTED": "Cần tự nhập",
+      "PROTECTED_PREFILLED": "Cần xác nhận"
+    },
+    "protectedNotice": "Thông tin nhạy cảm chỉ được dùng ở màn hình này và không được gửi tới AI.",
+    "generatePdf": "Tạo PDF",
+    "generatingPdf": "Đang tạo…",
+    "notReadyForPdf": "Vui lòng nhập các mục bắt buộc trước khi tạo PDF.",
+    "checkedProgramsLabel": "Chương trình đã bao gồm"
+  },
+  "pdf": {
+    "confirmTitle": "Vui lòng xác nhận trước khi tạo PDF",
+    "unverifiedWarning": "Vẫn còn mục chưa được xác nhận. Hãy kiểm tra lại nội dung sau khi tạo.",
+    "signNotice": "Bạn cần in PDF ra và ký tên trực tiếp.",
+    "verifyNotice": "Vui lòng xác nhận điều kiện mới nhất với cơ quan trước khi nộp.",
+    "identityNotice": "Để bảo vệ thông tin cá nhân, thông tin nhạy cảm có thể bị xóa sau khi tạo đơn. Nếu muốn tạo lại, bạn có thể cần nhập lại một số thông tin.",
+    "cancel": "Hủy",
+    "confirm": "Tạo PDF",
+    "status": {
+      "verifying": "Đang xác nhận…",
+      "generating": "Đang tạo…",
+      "downloading": "Đang bắt đầu tải xuống…",
+      "done": "Hoàn tất",
+      "error": "Tạo PDF thất bại"
+    },
+    "retry": "Thử lại",
+    "downloadAgain": "Tải lại"
+  },
+  "errors": {
+    "sessionCreateFailed": "Không thể tạo phiên làm việc. Vui lòng thử lại.",
+    "sessionExpired": "Phiên làm việc đã hết hạn. Vui lòng bắt đầu lại từ đầu.",
+    "candidatesFailed": "Không thể tải danh sách đề xuất.",
+    "verdictFailed": "Đánh giá chi tiết thất bại.",
+    "translationFailed": "Dịch thất bại, hiển thị văn bản gốc tiếng Hàn.",
+    "applicationCreateFailed": "Không thể tạo đơn đăng ký.",
+    "fieldValidationFailed": "Vui lòng kiểm tra lại thông tin đã nhập.",
+    "pdfFailed": "Tạo PDF thất bại.",
+    "networkLost": "Vui lòng kiểm tra kết nối mạng.",
+    "goToStart": "Quay lại từ đầu"
+  },
+  "validation": {
+    "required": "Đây là mục bắt buộc."
+  },
+  "common": {
+    "close": "Đóng",
+    "back": "Quay lại",
+    "next": "Tiếp theo",
+    "loading": "Đang tải…",
+    "retry": "Thử lại",
+    "cancel": "Hủy",
+    "confirm": "Xác nhận",
+    "openSidebar": "Mở thanh bên",
+    "toggleSidebar": "Chuyển thanh bên",
+    "new": "MỚI"
+  }
+}
