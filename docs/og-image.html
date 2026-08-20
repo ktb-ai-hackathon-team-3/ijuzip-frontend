@@ -1,0 +1,76 @@
+<!doctype html>
+<!--
+  OG 썸네일 원본. 수정 후 아래 명령으로 public/og-image.png 를 다시 생성합니다.
+
+  "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome" \
+    --headless --disable-gpu --hide-scrollbars \
+    --window-size=1200,630 --virtual-time-budget=5000 \
+    --screenshot=public/og-image.png \
+    "file://$PWD/docs/og-image.html"
+-->
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@600;700;800&family=Noto+Sans+KR:wght@500;700;800&family=Noto+Sans+Khmer:wght@600&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      * { box-sizing: border-box; margin: 0; }
+      body {
+        width: 1200px;
+        height: 630px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        gap: 28px;
+        padding: 0 88px;
+        background: #faf9f5;
+        background-image: radial-gradient(circle at 88% 12%, #daeae0 0%, rgba(218, 234, 224, 0) 55%);
+        font-family: 'Inter', 'Noto Sans KR', 'Noto Sans Khmer', system-ui, sans-serif;
+        color: #20241f;
+        overflow: hidden;
+      }
+      .badge {
+        align-self: flex-start;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 10px 20px;
+        border: 1px solid #daeae0;
+        border-radius: 999px;
+        background: #edf4ef;
+        color: #1f6b4a;
+        font-size: 25px;
+        font-weight: 700;
+      }
+      .badge span { width: 11px; height: 11px; border-radius: 50%; background: #2a7d57; }
+      .brand { font-size: 96px; font-weight: 800; letter-spacing: -0.035em; color: #0f3d2e; }
+      h1 { font-size: 55px; font-weight: 700; line-height: 1.3; letter-spacing: -0.02em; }
+      p { font-size: 31px; font-weight: 500; color: #686f66; line-height: 1.5; }
+      .langs {
+        display: flex;
+        gap: 12px;
+        margin-top: 12px;
+      }
+      .langs div {
+        padding: 9px 20px;
+        border: 1px solid #e3e1d6;
+        border-radius: 10px;
+        background: #ffffff;
+        font-size: 24px;
+        font-weight: 600;
+        color: #686f66;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="badge"><span></span>외국인 근로자 복지 안내</div>
+    <div class="brand">IJU.zip</div>
+    <h1>내 상황에 꼭 맞는 복지 제도를<br />찾고, 신청까지 함께.</h1>
+    <p>임신·출산·육아부터 산재·근로까지 — 모국어로 물어보세요.</p>
+    <div class="langs">
+      <div>한국어</div><div>English</div><div>Tiếng Việt</div><div>ភាសាខ្មែរ</div>
+    </div>
+  </body>
+</html>
