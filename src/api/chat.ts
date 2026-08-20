@@ -62,7 +62,21 @@ export async function sendChatMessage(
       async onopen(response) {
         if (response.ok && response.headers.get('content-type')?.includes('text/event-stream')) return;
         if (response.status === 401) notifySessionExpired();
-        throw new ApiRequestError({ code: 'SSE_OPEN_FAILED', message: `Unexpected response ${response.status}`, status: response.status });
+        // A turn that overlaps another one is rejected with 429 *before* the
+        // stream opens, so the real reason is in the JSON body, not in an SSE
+        // `error` event. Without reading it here a retryable "wait a moment"
+        // surfaced as a generic connection failure.
+        let code = 'SSE_OPEN_FAILED';
+        let message = `Unexpected response ${response.status}`;
+        try {
+          const data: any = await response.json();
+          const apiError = data?.error ?? data;
+          if (apiError?.code) code = apiError.code;
+          if (apiError?.message) message = apiError.message;
+        } catch {
+          // no JSON body — keep the generic message
+        }
+        throw new ApiRequestError({ code, message, status: response.status });
       },
       onmessage(ev) {
         if (!ev.event) return;
@@ -114,7 +128,10 @@ export async function sendChatMessage(
       onerror(err) {
         // Re-throw to stop fetch-event-source's default infinite retry —
         // a chat turn should surface as a user-facing error, not silently retry.
-        handlers.onError('CONNECTION_LOST', err instanceof Error ? err.message : 'Connection lost');
+        // `onopen` throws an ApiRequestError carrying the server's own code;
+        // flattening that to CONNECTION_LOST here loses `turn_in_progress`.
+        if (err instanceof ApiRequestError) handlers.onError(err.code, err.message);
+        else handlers.onError('CONNECTION_LOST', err instanceof Error ? err.message : 'Connection lost');
         throw err;
       },
     });

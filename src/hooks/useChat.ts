@@ -74,8 +74,11 @@ export function useChat() {
           onError: (code, message) => {
             setChatThinking(false);
             void message;
+            // Spring's ErrorCode is snake_case (`turn_in_progress`). Comparing
+            // against SCREAMING_CASE never matched, so an overlapping turn —
+            // which just needs a retry — read as a generic failure.
             const localized =
-              code === 'TURN_IN_PROGRESS' ? t('chat.errorLocked') : code === 'AI_TIMEOUT' ? t('chat.errorTimeout') : t('chat.errorGeneric');
+              code.toLowerCase() === 'turn_in_progress' ? t('chat.errorLocked') : t('chat.errorGeneric');
             appendMessage({
               seq: userSeq + 1,
               role: 'system',

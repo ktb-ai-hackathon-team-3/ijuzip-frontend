@@ -234,13 +234,19 @@ export function verdictFromBackend(raw: BackendResult): ProgramVerdict {
   };
 }
 
-const protectedKeys = new Set(['applicantName', 'registrationNo', 'address', 'phone', 'bankName', 'accountNo']);
-
-function fieldFromBackend(key: string, raw: any, missing: string[]): ApplicationField {
+/**
+ * Which fields are PROTECTED is decided by the backend's `map.json`, and the
+ * response now carries that list. Guessing it from key names here was wrong for
+ * 10 of the 13 protected fields — `registrationNo`, `address` and `phone` are not
+ * even keys this form has.
+ */
+function fieldFromBackend(
+  key: string, raw: any, missing: string[], protectedFields: Set<string>
+): ApplicationField {
   const source = raw?.source;
   const hasValue = raw?.value != null && String(raw.value).trim() !== '';
-  const status: ApplicationField['status'] = raw?.prefilled && protectedKeys.has(key) ? 'PROTECTED_PREFILLED'
-    : !hasValue && protectedKeys.has(key) ? 'PROTECTED'
+  const status: ApplicationField['status'] = raw?.prefilled && protectedFields.has(key) ? 'PROTECTED_PREFILLED'
+    : !hasValue && protectedFields.has(key) ? 'PROTECTED'
     : missing.includes(key) ? 'MISSING'
     : source === 'unconfirmed' ? 'UNVERIFIED' : 'FILLED';
   return { value: raw?.value ?? null, status, ...(raw?.prefilled || source === 'system' ? { sourceSlot: key } : {}) };
@@ -248,6 +254,7 @@ function fieldFromBackend(key: string, raw: any, missing: string[]): Application
 
 export function applicationFromBackend(raw: any): Application {
   const missing = raw.missingRequired ?? [];
+  const protectedFields = new Set<string>(raw.protectedFields ?? []);
   return {
     applicationId: raw.applicationId, formId: raw.formId,
     // The form title and every field label are display-only — the values the
@@ -258,16 +265,19 @@ export function applicationFromBackend(raw: any): Application {
       formCheckbox: item.formCheckbox,
       name: local(item.nameKo ?? item.recordId, item.nameLocal),
     })),
-    fields: Object.fromEntries(Object.entries(raw.fields ?? {}).map(([key, value]) => [key, fieldFromBackend(key, value, missing)])),
+    fields: Object.fromEntries(Object.entries(raw.fields ?? {}).map(([key, value]) => [key, fieldFromBackend(key, value, missing, protectedFields)])),
     fieldLabels: Object.fromEntries(Object.entries(raw.fieldLabels ?? {}).map(([key, value]: [string, any]) => [key, local(value.ko, value.local)])),
-    previewImages: raw.previewImages ?? raw.previewImageUrls ?? raw.formPreviewUrls ?? [],
+    // Page-by-page PNGs of the blank official form, already absolute URLs.
+    // Empty when the backend has no static-asset host configured.
+    previewImages: raw.formPreviewImages ?? [],
   };
 }
 
 export function patchFromBackend(raw: any) {
   const missing: string[] = raw.missingRequired ?? [];
+  const protectedFields = new Set<string>(raw.protectedFields ?? []);
   return {
-    fields: Object.fromEntries(Object.entries(raw.fields ?? {}).map(([key, value]) => [key, fieldFromBackend(key, value, missing)])),
+    fields: Object.fromEntries(Object.entries(raw.fields ?? {}).map(([key, value]) => [key, fieldFromBackend(key, value, missing, protectedFields)])),
     readyForPdf: Boolean(raw.readyForPdf), missingRequired: missing,
   };
 }

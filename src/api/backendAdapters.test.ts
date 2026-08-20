@@ -84,12 +84,28 @@ describe('backend v0.6 adapters', () => {
     const app = applicationFromBackend({
       applicationId: 'a1', formId: 'f1', formTitleKo: '신청서',
       checkedRecords: [{ recordId: 'p1', formCheckbox: 'svc_1' }],
-      fields: { childBirthDate: { value: '2026-01-01', source: 'system', prefilled: true }, registrationNo: { value: null, source: 'user_input', prefilled: false } },
-      fieldLabels: { childBirthDate: { ko: '생년월일', local: 'Ngày sinh' }, registrationNo: { ko: '등록번호', local: 'Số đăng ký' } },
-      missingRequired: ['registrationNo'],
+      fields: { childBirthDate: { value: '2026-01-01', source: 'system', prefilled: true }, applicantRegNo: { value: null, source: 'user_input', prefilled: false } },
+      fieldLabels: { childBirthDate: { ko: '생년월일', local: 'Ngày sinh' }, applicantRegNo: { ko: '등록번호', local: 'Số đăng ký' } },
+      // The server decides this — `map.json` owns it. Guessing from key names
+      // here got 10 of the form's 13 protected fields wrong.
+      protectedFields: ['applicantRegNo'],
+      missingRequired: ['applicantRegNo'],
+      formPreviewImages: ['https://assets.example.com/images/f1/01.png'],
     });
     expect(app.checkedPrograms[0].programId).toBe('p1');
     expect(app.fields.childBirthDate.sourceSlot).toBe('childBirthDate');
-    expect(app.fields.registrationNo.status).toBe('PROTECTED');
+    expect(app.fields.applicantRegNo.status).toBe('PROTECTED');
+    expect(app.previewImages).toEqual(['https://assets.example.com/images/f1/01.png']);
+  });
+
+  it('does not invent PROTECTED status when the server did not say so', () => {
+    const app = applicationFromBackend({
+      applicationId: 'a1', formId: 'f1', formTitleKo: '신청서',
+      fields: { bankName: { value: null, source: 'unconfirmed', prefilled: false } },
+      fieldLabels: {}, protectedFields: [], missingRequired: [],
+    });
+
+    expect(app.fields.bankName.status).toBe('UNVERIFIED');
+    expect(app.previewImages).toEqual([]);
   });
 });
