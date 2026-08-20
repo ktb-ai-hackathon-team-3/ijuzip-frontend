@@ -2,7 +2,7 @@ import { fetchEventSource } from '@microsoft/fetch-event-source';
 import { API_BASE_URL, apiFetch, USE_MOCK_API, ApiRequestError } from './client';
 import { mockCreateSession, mockGetCandidates, mockGetSession } from '../mocks/handlers';
 import { createSessionResponseSchema } from '../schemas/api';
-import type { CreateSessionResponse, Language, Profile, SessionSnapshot, Track } from './types';
+import type { CreateSessionResponse, Language, Profile, SessionSnapshot } from './types';
 import {
   buildCreateSessionResponse, resultsToCandidates, skeletonToCandidates,
   snapshotFromBackend, toBackendSessionRequest, type BackendResult,
@@ -10,14 +10,14 @@ import {
 
 export interface CreateSessionRequest {
   language: Language;
-  track: Track;
   profile: Omit<Profile, 'track' | 'language'>;
+  hasChildren: boolean | null;
   // 보호정보는 온보딩에 포함하지 않고 신청서 PATCH 단계에서 처음 입력한다.
 }
 
 /** §7.1 `POST /sessions` — onboarding submit. The only unauthenticated call. */
 export async function createSession(req: CreateSessionRequest): Promise<CreateSessionResponse> {
-  if (USE_MOCK_API) return mockCreateSession(req);
+  if (USE_MOCK_API) return mockCreateSession({ ...req, track: 'BIRTH_CARE' });
   let session: { sessionId: string; token: string; expiresIn: number } | null = null;
   let skeleton: { candidates?: Array<{ recordId: string; status?: string }>; funnel?: CreateSessionResponse['funnel'] } = {};
   let results: BackendResult[] | null = null;
@@ -44,7 +44,7 @@ export async function createSession(req: CreateSessionRequest): Promise<CreateSe
 
   if (streamError) throw streamError;
   if (!session) throw new ApiRequestError({ code: 'SESSION_CREATE_FAILED', message: 'Session event was not received.' });
-  return createSessionResponseSchema.parse(buildCreateSessionResponse(session, skeleton, results, req.language, req.track));
+  return createSessionResponseSchema.parse(buildCreateSessionResponse(session, skeleton, results, req.language));
 }
 
 /** §7.2 `GET /sessions/{sid}` — refresh / app-resume restore. */

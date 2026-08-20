@@ -33,7 +33,7 @@ export function Topbar({ title, subtitle, actions }: TopbarProps) {
             onClick={toggleSidebar}
           />
         )}
-        {!isMobile && !sidebarOpen && <div className={styles.brandMark}>I</div>}
+        {!isMobile && !sidebarOpen && <div className={styles.brandMark} aria-hidden="true"><span /><span /></div>}
         <div className={styles.titleWrap}>
           <div className={styles.title}>{title}</div>
           {subtitle && <div className={styles.subtitle}>{subtitle}</div>}

@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { getSession } from '../api/sessions';
 import { useSessionStore } from '../stores/sessionStore';
 import { ApiRequestError } from '../api/client';
+import i18n from '../i18n';
 
 export type BootstrapStatus = 'idle' | 'restoring' | 'ready' | 'no-session' | 'expired';
 
@@ -34,6 +35,8 @@ export function useSessionBootstrap(): BootstrapStatus {
       try {
         let snapshot = await getSession(sessionId, token);
         if (cancelled) return;
+        document.documentElement.lang = snapshot.profile.language;
+        await i18n.changeLanguage(snapshot.profile.language);
         restoreSnapshot(snapshot);
 
         // The backend may still be assessing candidates when the page is

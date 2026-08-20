@@ -1,17 +1,23 @@
 .scroll {
   flex: 1;
+  min-width: 0;
   overflow-y: auto;
-  padding: clamp(20px, 4vh, 32px) 0 40px;
+  overflow-x: hidden;
+  scrollbar-gutter: stable;
+  padding: clamp(24px, 5vh, 44px) 0 24px;
   display: flex;
   justify-content: center;
+  align-items: flex-start;
 }
 .col {
+  flex: 0 0 auto;
   width: 100%;
-  max-width: 840px;
+  max-width: clamp(840px, 70vw, 1280px);
   padding: 0 clamp(16px, 5vw, 40px);
   display: flex;
   flex-direction: column;
   gap: 18px;
+  min-width: 0;
 }
 
 .row {
@@ -29,7 +35,7 @@
   flex-shrink: 0;
   border-radius: 999px;
   background: var(--green-900);
-  box-shadow: 0 3px 8px rgba(15, 61, 46, 0.28);
+  box-shadow: 0 7px 16px rgba(49, 95, 77, 0.2);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -39,9 +45,9 @@
 .bubbleAi {
   background: var(--surface);
   border: 1px solid var(--border);
-  border-radius: 16px;
+  border-radius: 5px 18px 18px 18px;
   box-shadow: var(--shadow);
-  padding: 15px 18px;
+  padding: 16px 19px;
   font-size: 15px;
   line-height: 1.62;
   max-width: min(660px, 82%);
@@ -49,8 +55,8 @@
 .bubbleUser {
   background: var(--green-900);
   color: var(--surface);
-  border-radius: 16px;
-  box-shadow: 0 4px 14px rgba(15, 61, 46, 0.22);
+  border-radius: 18px 5px 18px 18px;
+  box-shadow: 0 8px 20px rgba(49, 95, 77, 0.18);
   padding: 12px 17px;
   font-size: 15px;
   line-height: 1.55;
@@ -90,13 +96,16 @@
 .thinkingBubble {
   display: flex;
   align-items: center;
-  gap: 9px;
   color: var(--text-muted);
-  font-style: italic;
+  min-width: 52px;
+  min-height: 38px;
+  justify-content: center;
+  padding: 10px 15px;
 }
 .thinkDots {
   display: inline-flex;
-  gap: 3px;
+  align-items: center;
+  gap: 4px;
   flex-shrink: 0;
 }
 .thinkDots span {
@@ -133,7 +142,7 @@
 }
 .chip {
   border: 1px solid var(--border-strong);
-  border-radius: 9px;
+  border-radius: 999px;
   padding: 8px 14px;
   font-size: 13px;
   font-weight: 500;

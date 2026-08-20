@@ -1,10 +1,10 @@
 {
   "app": { "name": "IJU.zip" },
   "language": {
-    "title1": "Hi, I'm IJU.zip.",
-    "title2": "How can I help you today?",
-    "subtitle1": "Please choose your preferred language.",
-    "subtitle2": "We'll help you find welfare programs that fit your situation and support you through applying.",
+    "title1": "A kinder guide",
+    "title2": "to life in Korea.",
+    "subtitle1": "Find welfare programs that fit your situation,",
+    "subtitle2": "and take each application step together.",
     "startBtn": "Start in the selected language"
   },
   "onboarding": {
@@ -12,7 +12,7 @@
     "title1": "To find the right support for you,",
     "title2": "please share some basic information",
     "subtitle": "Your information is used to match you with the right programs.",
-    "trackHint": "Fill in whichever of these applies to you — you can skip the other.",
+    "trackHint": "What kind of support are you looking for? Choose one to see only the questions you need.",
     "sectionBirth": "Pregnancy · Birth · Childcare",
     "sectionLabor": "Workplace injury · Employment",
     "optionalTag": "optional",
@@ -24,6 +24,7 @@
       "region": "Region",
       "sido": "Province / metropolitan city",
       "sigungu": "City / county / district",
+      "hasChildren": "Do you have children?",
       "childBirthDate": "Child's (expected) birth date",
       "childNationality": "Child's nationality",
       "householdSize": "Household size",
@@ -35,8 +36,12 @@
       "select": "Please select",
       "date": "YYYY-MM-DD"
     },
+    "date": { "year": "Year", "month": "Month", "day": "Day", "monthValue": "Month {{value}}", "dayValue": "Day {{value}}" },
+    "householdMembers": "{{count}} people",
     "skipTag": "Skip",
-    "atLeastOne": "Please fill in at least one of the two sections above."
+    "atLeastOne": "Please fill in at least one of the two sections above.",
+    "oneTrackOnly": "Please enter either the child's birth date or the accident date, not both.",
+    "futureDate": "Dates after today cannot be selected."
   },
   "sidebar": {
     "returnToChat": "Current AI welfare chat",
@@ -52,7 +57,11 @@
     },
     "filterChipClear": "Clear filter",
     "emptyState": "No recommended programs yet. Start chatting with the AI.",
-    "applicationInProgress": "Application in progress"
+    "applicationInProgress": "Application in progress",
+    "filters": {
+      "keys": { "benefitType": "Support type", "region": "Region", "eligibility": "Eligibility" },
+      "values": { "CASH": "Cash support", "SERVICE": "Service support", "ALL": "All" }
+    }
   },
   "chat": {
     "title": "AI welfare chat",
@@ -83,6 +92,7 @@
       "unmetConditions": "Condition status",
       "applicationChannel": "How to apply",
       "applicationOrg": "Handling organization",
+      "defaultApplicationOrg": "Relevant administrative office",
       "requiredDocuments": "Required documents",
       "deadline": "Application deadline",
       "sourceOriginal": "Original Korean text",
@@ -151,6 +161,8 @@
     "required": "This field is required."
   },
   "common": {
+    "yes": "Yes",
+    "no": "No",
     "close": "Close",
     "back": "Back",
     "next": "Next",

@@ -87,8 +87,7 @@ export function ChatMessages({ quickReplies, onSend, onOpenProgram }: ChatMessag
               <MessageCircle size={14} aria-hidden="true" />
             </div>
             <div className={`${styles.bubbleAi} ${styles.thinkingBubble}`}>
-              {t('chat.thinking.label')}
-              <span className={styles.thinkDots}>
+              <span className={styles.thinkDots} aria-label={t('chat.thinking.label')} role="status">
                 <span />
                 <span />
                 <span />
