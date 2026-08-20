@@ -3,7 +3,6 @@ import { Menu, PanelLeft } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { useUiStore } from '../../stores/uiStore';
 import { IconButton } from '../common/IconButton';
-import { BrandLogo } from '../common/BrandLogo';
 import styles from './Topbar.module.css';
 
 interface TopbarProps {
@@ -34,7 +33,6 @@ export function Topbar({ title, subtitle, actions }: TopbarProps) {
             onClick={toggleSidebar}
           />
         )}
-        {!isMobile && !sidebarOpen && <BrandLogo className={styles.brandLogo} decorative />}
         <div className={styles.titleWrap}>
           <div className={styles.title}>{title}</div>
           {subtitle && <div className={styles.subtitle}>{subtitle}</div>}
