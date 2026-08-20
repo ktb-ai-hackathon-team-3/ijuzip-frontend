@@ -35,6 +35,9 @@ export function ApplicationPage() {
 
   const [values, setValues] = useState<Record<string, string>>({});
   const [previewPage, setPreviewPage] = useState(0);
+  // 백엔드가 주소를 못 내려보내는 것과 그 주소가 404 인 것을 화면에선 같게 다룬다 —
+  // 깨진 이미지 아이콘 대신 서식 이름이 적힌 플레이스홀더로 떨어진다
+  const [previewFailed, setPreviewFailed] = useState(false);
 
   useEffect(() => {
     if (!applicationQuery.data) return;
@@ -47,6 +50,7 @@ export function ApplicationPage() {
 
   useEffect(() => {
     setPreviewPage(0);
+    setPreviewFailed(false);
   }, [appId, applicationQuery.data?.previewImages?.length]);
 
   if (!appId) {
@@ -96,7 +100,7 @@ export function ApplicationPage() {
   }
 
   const data = applicationQuery.data;
-  const previewImages = data?.previewImages ?? [];
+  const previewImages = previewFailed ? [] : data?.previewImages ?? [];
   const hasMultiplePreviewPages = previewImages.length > 1;
   const unverifiedLabels = data
     ? Object.entries(data.fields)
@@ -111,16 +115,21 @@ export function ApplicationPage() {
       <div className={styles.scroll}>
         <div className={styles.grid}>
           <div className={styles.previewCol}>
-            {/* Image slot: swap this placeholder for an <img src={officialFormAsset}>
-                once the real scanned-form asset is wired up — the aspect-ratio
-                box and border are already sized to hold it. */}
+            {/* Image slot: the blank official form, one PNG per page, flipped in
+                place. Every page is mounted so 넘기기 has no load flash; the
+                placeholder below is what shows when there are no images. */}
             <div className={styles.previewImageSlot}>
               {previewImages.length > 0 ? (
-                <img
-                  className={styles.previewImage}
-                  src={previewImages[previewPage]}
-                  alt={`${data?.formTitle.user ?? t('application.title')} ${previewPage + 1}`}
-                />
+                previewImages.map((src, page) => (
+                  <img
+                    key={src}
+                    className={`${styles.previewImage} ${page === previewPage ? styles.previewImageActive : ''}`}
+                    src={src}
+                    alt={`${data?.formTitle.user ?? t('application.title')} ${page + 1}`}
+                    aria-hidden={page === previewPage ? undefined : true}
+                    onError={() => setPreviewFailed(true)}
+                  />
+                ))
               ) : (
                 <>
                   <FileText size={36} className={styles.previewIcon} aria-hidden="true" />

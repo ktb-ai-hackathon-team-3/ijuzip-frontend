@@ -42,6 +42,11 @@
   height: 100%;
   object-fit: contain;
   background: var(--surface);
+  opacity: 0;
+  transition: opacity .18s ease;
+}
+.previewImageActive {
+  opacity: 1;
 }
 .previewNav {
   position: absolute;
@@ -89,6 +94,14 @@
   transition: opacity .18s ease;
 }
 .previewImageSlot:hover .previewPageCount { opacity: .7; }
+/* 터치 기기엔 hover 가 없다 — 넘길 수단이 아예 안 보이면 미리보기가 1장짜리로 보인다 */
+@media (hover: none) {
+  .previewNav {
+    opacity: .72;
+    transform: translateY(-50%) scale(1);
+  }
+  .previewPageCount { opacity: .7; }
+}
 .previewIcon {
   color: var(--border-strong);
 }
@@ -214,7 +227,7 @@
     flex: 1 1 100%;
     max-width: 420px;
   }
-  .previewCard {
+  .previewImageSlot {
     width: 100%;
   }
 }

@@ -515,8 +515,22 @@ export async function mockCreateApplication(sid: string, token: string | null, p
     })),
     fields,
     fieldLabels,
+    previewImages: FORM_PREVIEW_IMAGES[formId] ?? [],
   };
 }
+
+/**
+ * 서식 미리보기 PNG. 실제 백엔드는 `ASSETS_BASE_URL` 을 앞에 붙인 절대주소를
+ * 페이지 순서대로 내려보내므로(§7.8 `formPreviewImages`), 목도 같은 주소를 쓴다.
+ * 목 서식 id 는 백엔드 id 와 다르지만 이미지 폴더는 백엔드 쪽 이름이다.
+ */
+const FORM_PREVIEW_IMAGES: Record<string, string[]> = {
+  'birth-integrated-v1': [
+    'https://ijuzip.xyz/images/form-birth-integrated/01.png',
+    'https://ijuzip.xyz/images/form-birth-integrated/02.png',
+    'https://ijuzip.xyz/images/form-birth-integrated/03.png',
+  ],
+};
 
 const FORM_TITLES: Record<string, Record<Language, string>> = {
   'birth-integrated-v1': {
@@ -573,6 +587,7 @@ export async function mockGetApplication(appId: string, token: string | null) {
     }),
     fields: maskedFields,
     fieldLabels: buildFieldLabels(app, session.language),
+    previewImages: FORM_PREVIEW_IMAGES[app.formId] ?? [],
   };
   function buildFieldLabels(a: MockApplicationRecord, lang: Language) {
     const labels: Record<string, { ko: string; user: string }> = {};
