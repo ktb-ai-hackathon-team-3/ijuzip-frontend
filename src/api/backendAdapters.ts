@@ -231,7 +231,7 @@ export function programDetailFromBackend(raw: BackendResult): ProgramDetail {
     evidence: { sourceSnippet: raw.sourceSnippet ?? '', sourceUrl: raw.sourceUrl ?? '', lastVerified: raw.lastVerified ?? '' },
     applicationChannel: 'VISIT', applicationOrg: local(raw.applicationOrgKo ?? '관할 행정기관', raw.applicationOrgLocal),
     requiredDocuments: (raw.requiredDocuments ?? []).map((doc, index) => local(doc, raw.requiredDocumentsLocal?.[index])),
-    deadline: raw.deadlineDescLocal ?? raw.deadlineDesc ?? '',
+    deadline: local(raw.deadlineDesc, raw.deadlineDescLocal),
   };
 }
 
@@ -247,7 +247,7 @@ export function verdictFromBackend(raw: BackendResult): ProgramVerdict {
     benefit: local(raw.amountDescKo, raw.amountDescLocal),
     evidence: { sourceSnippet: raw.sourceSnippet ?? '', sourceUrl: raw.sourceUrl ?? '', lastVerified: raw.lastVerified ?? '' },
     applicationChannel: 'VISIT', applicationOrg: '관할 행정기관', formId: raw.formId ?? '',
-    formCheckbox: raw.formCheckbox ?? '', deadline: raw.deadlineDesc ?? '', judgedAt: new Date().toISOString(),
+    formCheckbox: raw.formCheckbox ?? '', deadline: local(raw.deadlineDesc, raw.deadlineDescLocal), judgedAt: new Date().toISOString(),
   };
 }
 

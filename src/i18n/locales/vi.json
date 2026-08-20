@@ -104,6 +104,7 @@
       "defaultApplicationOrg": "Cơ quan hành chính có thẩm quyền",
       "requiredDocuments": "Giấy tờ cần thiết",
       "deadline": "Hạn đăng ký",
+      "infoUnavailable": "Không thể xác minh được thông tin này.",
       "sourceOriginal": "Văn bản gốc tiếng Hàn",
       "sourceLink": "Xem nguồn",
       "lastVerified": "Ngày xác nhận gần nhất",
@@ -113,6 +114,7 @@
       "disclaimer": "Quyết định cuối cùng thuộc về cơ quan phụ trách. Vui lòng xác nhận trước khi nộp đơn thực tế.",
       "close": "Đóng",
       "goToApplication": "Bắt đầu soạn đơn đăng ký",
+      "applicationFormUnavailable": "Chưa hỗ trợ soạn đơn cho mục này",
       "channel": { "VISIT": "Đăng ký trực tiếp", "ONLINE": "Đăng ký trực tuyến", "MAIL": "Đăng ký qua thư" }
     }
   },

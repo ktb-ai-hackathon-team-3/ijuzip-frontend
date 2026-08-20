@@ -24,7 +24,7 @@ export interface MockProgram {
   applicationChannel: ApplicationChannel;
   applicationOrg: Record<Language, string>;
   requiredDocuments: Record<Language, string>[];
-  deadline: string;
+  deadline: Record<Language, string>;
   sourceSnippet: string;
   sourceUrl: string;
   lastVerified: string;
@@ -74,7 +74,7 @@ export const MOCK_PROGRAMS: MockProgram[] = [
       t('신분증', 'Giấy tờ tùy thân', 'អត្តសញ្ញាណប័ណ្ណ', 'ID card'),
       t('출생증명서', 'Giấy khai sinh', 'សំបុត្រកំណើត', 'Birth certificate'),
     ],
-    deadline: '출생일로부터 24개월',
+    deadline: t('출생일로부터 24개월', 'Trong vòng 24 tháng kể từ ngày sinh', 'ក្នុងរយៈពេល ២៤ខែគិតចាប់ពីថ្ងៃកំណើត', 'Within 24 months of birth'),
     sourceSnippet: '출생아로서 출생신고되어 정상적으로 주민등록번호를 부여받은 아동(2024년 이후 출생아로서 주민등록상 생년월일로부터 2년이 초과되지 않는 출생아)을 대상으로 합니다.',
     sourceUrl: 'https://www.bokjiro.go.kr/ssis-tbu/twataa/wlfareInfo/moveTWAT52011M.do?wlfareInfoId=WLF00004656&wlfareInfoReldBztpCd=01',
     lastVerified: '2026-08-19',
@@ -112,7 +112,7 @@ export const MOCK_PROGRAMS: MockProgram[] = [
       'Apply online via Bokjiro'
     ),
     requiredDocuments: [t('신분증', 'Giấy tờ tùy thân', 'អត្តសញ្ញាណប័ណ្ណ', 'ID card')],
-    deadline: '출생일로부터 60일 이내 신청 권장',
+    deadline: t('출생일로부터 60일 이내 신청 권장', 'Khuyến nghị đăng ký trong vòng 60 ngày kể từ ngày sinh', 'ណែនាំឱ្យដាក់ពាក្យក្នុងរយៈពេល ៦០ថ្ងៃគិតចាប់ពីថ្ងៃកំណើត', 'Applying within 60 days of birth is recommended'),
     sourceSnippet: '2세 미만의 아동(0~23개월)에게 지원합니다. 대한민국 국적을 보유한 아동을 대상으로 하며 별도의 소득인정액 기준은 없습니다.',
     sourceUrl: 'https://www.bokjiro.go.kr/ssis-tbu/twataa/wlfareInfo/moveTWAT52011M.do?wlfareInfoId=WLF00004657',
     lastVerified: '2026-08-19',
@@ -142,7 +142,7 @@ export const MOCK_PROGRAMS: MockProgram[] = [
     applicationChannel: 'ONLINE',
     applicationOrg: t('복지로 온라인 신청', 'Đăng ký trực tuyến qua Bokjiro', 'ដាក់ពាក្យអនឡាញតាមរយៈ Bokjiro', 'Apply online via Bokjiro'),
     requiredDocuments: [t('신분증', 'Giấy tờ tùy thân', 'អត្តសញ្ញាណប័ណ្ណ', 'ID card')],
-    deadline: '상시 신청 가능',
+    deadline: t('상시 신청 가능', 'Có thể đăng ký bất cứ lúc nào', 'អាចដាក់ពាក្យបានគ្រប់ពេល', 'Can apply anytime'),
     sourceSnippet: '만 8세 미만의 아동에게 아동수당을 지급합니다. 주민등록번호가 정상적으로 부여된 아동에게 지원합니다.',
     sourceUrl: 'https://www.bokjiro.go.kr/ssis-tbu/twataa/wlfareInfo/moveTWAT52011M.do?wlfareInfoId=WLF00001171',
     lastVerified: '2026-08-19',
@@ -175,7 +175,7 @@ export const MOCK_PROGRAMS: MockProgram[] = [
     applicationChannel: 'VISIT',
     applicationOrg: t('관할 동 행정복지센터', 'Trung tâm hành chính phường phụ trách', 'មជ្ឈមណ្ឌលរដ្ឋបាលសង្កាត់ដែលទទួលបន្ទុក', 'The responsible neighborhood administrative welfare center'),
     requiredDocuments: [t('신분증', 'Giấy tờ tùy thân', 'អត្តសញ្ញាណប័ណ្ណ', 'ID card')],
-    deadline: '출생일로부터 1년 6개월 이내',
+    deadline: t('출생일로부터 1년 6개월 이내', 'Trong vòng 1 năm 6 tháng kể từ ngày sinh', 'ក្នុងរយៈពេល ១ឆ្នាំ៦ខែគិតចាប់ពីថ្ងៃកំណើត', 'Within 1 year and 6 months of birth'),
     sourceSnippet: '부 또는 모, 보호자가 출생일 현재 연속하여 1년 이상 안산시에 주민등록이 되어 있고, 출생아가 안산시에 출생신고가 되어 있는 가정을 대상으로 합니다.',
     sourceUrl: 'https://ansan.go.kr/iloveyou/sub/contents.do?c1=3&c3=14',
     lastVerified: '2026-08-19',
@@ -209,7 +209,7 @@ export const MOCK_PROGRAMS: MockProgram[] = [
     applicationChannel: 'VISIT',
     applicationOrg: t('관할 동 행정복지센터', 'Trung tâm hành chính phường phụ trách', 'មជ្ឈមណ្ឌលរដ្ឋបាលសង្កាត់ដែលទទួលបន្ទុក', 'The responsible neighborhood administrative welfare center'),
     requiredDocuments: [t('신분증', 'Giấy tờ tùy thân', 'អត្តសញ្ញាណប័ណ្ណ', 'ID card')],
-    deadline: '출생일로부터 1년 이내',
+    deadline: t('출생일로부터 1년 이내', 'Trong vòng 1 năm kể từ ngày sinh', 'ក្នុងរយៈពេល ១ឆ្នាំគិតចាប់ពីថ្ងៃកំណើត', 'Within 1 year of birth'),
     sourceSnippet: '해산급여는 기초생활보장 수급자 중 출산(예정)한 경우 출생아 1명당 지급합니다.',
     sourceUrl: 'https://www.bokjiro.go.kr/',
     lastVerified: '2026-08-19',
@@ -239,7 +239,7 @@ export const MOCK_PROGRAMS: MockProgram[] = [
     applicationChannel: 'VISIT',
     applicationOrg: t('근로복지공단 지사', 'Chi nhánh Công đoàn Phúc lợi Lao động', 'សាខាអង្គការសុខុមាលភាពការងារ', 'Korea Workers\' Compensation & Welfare Service branch office'),
     requiredDocuments: [t('신분증', 'Giấy tờ tùy thân', 'អត្តសញ្ញាណប័ណ្ណ', 'ID card'), t('진단서', 'Giấy chẩn đoán y tế', 'លិខិតធ្វើរោគវិនិច្ឆ័យ', 'Medical diagnosis certificate')],
-    deadline: '재해일로부터 3년 이내',
+    deadline: t('재해일로부터 3년 이내', 'Trong vòng 3 năm kể từ ngày xảy ra tai nạn', 'ក្នុងរយៈពេល ៣ឆ្នាំគិតចាប់ពីថ្ងៃកើតគ្រោះថ្នាក់', 'Within 3 years of the accident'),
     sourceSnippet: '지원대상: 업무상 사유로 부상·질병·장해가 발생한 근로자. 체류자격 무관.',
     sourceUrl: 'https://webzine.comwel.or.kr/vol115/sub02.html',
     lastVerified: '2026-08-19',
@@ -269,7 +269,7 @@ export const MOCK_PROGRAMS: MockProgram[] = [
     applicationChannel: 'VISIT',
     applicationOrg: t('근로복지공단 지사', 'Chi nhánh Công đoàn Phúc lợi Lao động', 'សាខាអង្គការសុខុមាលភាពការងារ', 'Korea Workers\' Compensation & Welfare Service branch office'),
     requiredDocuments: [t('신분증', 'Giấy tờ tùy thân', 'អត្តសញ្ញាណប័ណ្ណ', 'ID card'), t('요양확인서', 'Giấy xác nhận điều trị', 'លិខិតបញ្ជាក់ការព្យាបាល', 'Certificate of medical treatment')],
-    deadline: '재해일로부터 3년 이내',
+    deadline: t('재해일로부터 3년 이내', 'Trong vòng 3 năm kể từ ngày xảy ra tai nạn', 'ក្នុងរយៈពេល ៣ឆ្នាំគិតចាប់ពីថ្ងៃកើតគ្រោះថ្នាក់', 'Within 3 years of the accident'),
     sourceSnippet: '지원대상: 요양으로 취업하지 못한 근로자. 체류자격 무관.',
     sourceUrl: 'https://webzine.comwel.or.kr/vol115/sub02.html',
     lastVerified: '2026-08-19',

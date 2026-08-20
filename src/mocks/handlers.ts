@@ -421,7 +421,7 @@ export async function mockGetVerdict(
     applicationOrg: program.applicationOrg[session.language] ?? program.applicationOrg.ko,
     formId: program.formId,
     formCheckbox: program.formCheckbox,
-    deadline: program.deadline,
+    deadline: localize(program.deadline, session.language),
     judgedAt: new Date().toISOString(),
   };
   void candidate;
@@ -444,7 +444,7 @@ export async function mockGetProgramDetail(pid: string, lang: Language): Promise
     applicationChannel: program.applicationChannel,
     applicationOrg: localize(program.applicationOrg, lang),
     requiredDocuments: program.requiredDocuments.map((d) => localize(d, lang)),
-    deadline: program.deadline,
+    deadline: localize(program.deadline, lang),
   };
 }
 

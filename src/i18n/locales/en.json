@@ -104,6 +104,7 @@
       "defaultApplicationOrg": "Relevant administrative office",
       "requiredDocuments": "Required documents",
       "deadline": "Application deadline",
+      "infoUnavailable": "This information could not be verified.",
       "sourceOriginal": "Original Korean text",
       "sourceLink": "View source",
       "lastVerified": "Last verified",
@@ -113,6 +114,7 @@
       "disclaimer": "The responsible organization makes the final decision. Please confirm before actually applying.",
       "close": "Close",
       "goToApplication": "Start the application",
+      "applicationFormUnavailable": "Application not supported yet",
       "channel": { "VISIT": "In-person application", "ONLINE": "Online application", "MAIL": "Mail application" }
     }
   },

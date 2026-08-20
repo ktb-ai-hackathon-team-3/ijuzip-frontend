@@ -146,7 +146,7 @@ export interface ProgramVerdict {
   applicationOrg: string;
   formId: string;
   formCheckbox: string;
-  deadline: string;
+  deadline: LocalizedText;
   judgedAt: string;
 }
 
@@ -164,7 +164,7 @@ export interface ProgramDetail {
   applicationChannel: ApplicationChannel;
   applicationOrg: LocalizedText;
   requiredDocuments: LocalizedText[];
-  deadline: string;
+  deadline: LocalizedText;
 }
 
 export type ApplicationFieldStatus =

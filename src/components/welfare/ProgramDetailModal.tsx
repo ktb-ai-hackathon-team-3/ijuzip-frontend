@@ -14,7 +14,7 @@ import { incomeBandToBackend } from '../../api/backendAdapters';
 import { useSessionStore } from '../../stores/sessionStore';
 import { useUiStore } from '../../stores/uiStore';
 import { INCOME_BAND_OPTIONS } from '../../i18n/optionData';
-import type { Language, ProgramVerdict, VerdictStatus } from '../../api/types';
+import type { Language, LocalizedText, ProgramVerdict, VerdictStatus } from '../../api/types';
 import styles from './ProgramDetailModal.module.css';
 
 const VERDICT_TONE: Record<VerdictStatus, 'positive' | 'warning' | 'negative'> = {
@@ -22,6 +22,11 @@ const VERDICT_TONE: Record<VerdictStatus, 'positive' | 'warning' | 'negative'> =
   NEEDS_CHECK: 'warning',
   NOT_ELIGIBLE: 'negative',
 };
+
+/** True when the backend never actually translated this field — it fell back to the Korean original. */
+function isUnverified(text: LocalizedText, lang: string): boolean {
+  return lang !== 'ko' && !!text.ko && text.user === text.ko;
+}
 
 interface ProgramDetailModalProps {
   programId: string;
@@ -55,7 +60,8 @@ export function ProgramDetailModal({ programId }: ProgramDetailModalProps) {
   });
 
   const verdict: ProgramVerdict | undefined = extraAnswerMutation.data ?? verdictQuery.data;
-  const canApply = !!verdict && verdict.verdict !== 'NOT_ELIGIBLE';
+  const hasForm = !!verdict?.formId;
+  const canApply = !!verdict && verdict.verdict !== 'NOT_ELIGIBLE' && hasForm;
 
   async function handleGoToApplication() {
     try {
@@ -78,9 +84,14 @@ export function ProgramDetailModal({ programId }: ProgramDetailModalProps) {
           <Button variant="secondary" fullWidth onClick={closeDetailModal}>
             {t('welfare.modal.close')}
           </Button>
-          {verdict && (
+          {verdict && hasForm && (
             <Button variant="primary" fullWidth disabled={!canApply} loading={createApplication.isPending} onClick={handleGoToApplication}>
               {t('welfare.modal.goToApplication')}
+            </Button>
+          )}
+          {verdict && !hasForm && (
+            <Button variant="secondary" fullWidth disabled>
+              {t('welfare.modal.applicationFormUnavailable')}
             </Button>
           )}
         </>
@@ -162,7 +173,13 @@ export function ProgramDetailModal({ programId }: ProgramDetailModalProps) {
         <>
           <div className={styles.row}>
             <span className={styles.lbl}>{t('welfare.modal.benefit')}</span>
-            <span className={styles.val}>{detailQuery.data.benefit.user}</span>
+            <span className={styles.val}>
+              {isUnverified(detailQuery.data.benefit, i18n.language) ? (
+                <span className={styles.infoUnavailable}>{t('welfare.modal.infoUnavailable')}</span>
+              ) : (
+                detailQuery.data.benefit.user
+              )}
+            </span>
           </div>
           <div className={styles.row}>
             <span className={styles.lbl}>{t('welfare.modal.applicationChannel')}</span>
@@ -188,7 +205,13 @@ export function ProgramDetailModal({ programId }: ProgramDetailModalProps) {
           </div>
           <div className={styles.row}>
             <span className={styles.lbl}>{t('welfare.modal.deadline')}</span>
-            <span className={styles.val}>{detailQuery.data.deadline}</span>
+            <span className={styles.val}>
+              {isUnverified(detailQuery.data.deadline, i18n.language) ? (
+                <span className={styles.infoUnavailable}>{t('welfare.modal.infoUnavailable')}</span>
+              ) : (
+                detailQuery.data.deadline.user
+              )}
+            </span>
           </div>
           <div className={styles.row}>
             <span className={styles.lbl}>{t('welfare.modal.sourceOriginal')}</span>
