@@ -115,10 +115,10 @@ export function ApplicationPage() {
       <div className={styles.scroll}>
         <div className={styles.grid}>
           <div className={styles.previewCol}>
-            {/* Image slot: the blank official form, one PNG per page, flipped in
-                place. Every page is mounted so 넘기기 has no load flash; the
-                placeholder below is what shows when there are no images. */}
-            <div className={styles.previewImageSlot}>
+            <div className={styles.previewStickyContent}>
+              {/* The blank official form, one PNG per page, flipped in place.
+                  Every page stays mounted so page changes have no load flash. */}
+              <div className={styles.previewImageSlot}>
               {previewImages.length > 0 ? (
                 previewImages.map((src, page) => (
                   <img
@@ -157,17 +157,8 @@ export function ApplicationPage() {
                   <span className={styles.previewPageCount}>{previewPage + 1} / {previewImages.length}</span>
                 </>
               )}
-            </div>
-            {data && (
-              <div className={styles.checkedList}>
-                <div className={styles.checkedLabel}>{t('application.checkedProgramsLabel')}</div>
-                {data.checkedPrograms.map((p) => (
-                  <div key={p.programId} className={styles.checkedItem}>
-                    {p.name.user}
-                  </div>
-                ))}
               </div>
-            )}
+            </div>
           </div>
 
           <div className={styles.formCol}>

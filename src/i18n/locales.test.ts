@@ -23,4 +23,10 @@ describe('locale completeness', () => {
       }
     }
   });
+
+  it('labels every empty application field as requiring direct user input', () => {
+    for (const locale of [ko, vi, km, en] as any[]) {
+      expect(locale.application.status.MISSING).toBe(locale.application.status.PROTECTED);
+    }
+  });
 });

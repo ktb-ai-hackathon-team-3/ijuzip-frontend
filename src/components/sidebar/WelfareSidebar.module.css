@@ -315,7 +315,8 @@
   font-variant-numeric: tabular-nums;
 }
 .priorityItem .rank {
-  background: var(--green-800);
+  /* --green-800 does not exist, so light mode used to drop this declaration. */
+  background: var(--green-900);
   color: #fff;
 }
 .itemTitleRow {

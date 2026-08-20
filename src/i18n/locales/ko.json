@@ -124,7 +124,7 @@
     "status": {
       "FILLED": "자동입력",
       "UNVERIFIED": "확인 필요",
-      "MISSING": "입력 필요",
+      "MISSING": "직접 입력 필요",
       "PROTECTED": "직접 입력 필요",
       "PROTECTED_PREFILLED": "확인 필요"
     },

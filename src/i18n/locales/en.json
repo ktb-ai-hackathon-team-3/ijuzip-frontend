@@ -124,7 +124,7 @@
     "status": {
       "FILLED": "Auto-filled",
       "UNVERIFIED": "Needs confirmation",
-      "MISSING": "Needs input",
+      "MISSING": "Needs your input",
       "PROTECTED": "Needs your input",
       "PROTECTED_PREFILLED": "Needs confirmation"
     },

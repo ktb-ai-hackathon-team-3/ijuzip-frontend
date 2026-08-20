@@ -124,7 +124,7 @@
     "status": {
       "FILLED": "Đã tự động điền",
       "UNVERIFIED": "Cần xác nhận",
-      "MISSING": "Cần nhập",
+      "MISSING": "Cần tự nhập",
       "PROTECTED": "Cần tự nhập",
       "PROTECTED_PREFILLED": "Cần xác nhận"
     },

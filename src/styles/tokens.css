@@ -5,8 +5,10 @@
  */
 :root {
   --green-900: #315f4d;
+  --green-800: #3f705c;
   --green-700: #4f806a;
   --green-600: #6a9a84;
+  --green-300: #a8c5b6;
   --green-50: #f0f5f1;
   --green-100: #e2ece5;
 
@@ -51,8 +53,10 @@
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme='light']) {
     --green-900: #3fae7c;
+    --green-800: #49b987;
     --green-700: #57c393;
     --green-600: #2f8f65;
+    --green-300: #315f4a;
     --green-50: #182620;
     --green-100: #1f3229;
 
@@ -82,8 +86,10 @@
 
 :root[data-theme='dark'] {
   --green-900: #3fae7c;
+  --green-800: #49b987;
   --green-700: #57c393;
   --green-600: #2f8f65;
+  --green-300: #315f4a;
   --green-50: #182620;
   --green-100: #1f3229;
 
