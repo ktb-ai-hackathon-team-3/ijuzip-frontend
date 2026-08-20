@@ -188,6 +188,40 @@ export const MOCK_PROGRAMS: MockProgram[] = [
     },
   },
   {
+    // 실제 KB(programs.json)에서 소득 조건이 걸린 유일한 제도다.
+    // 목에 없으면 소득 재질문 경로를 전혀 재현할 수 없다.
+    programId: 'mohw-childbirth-benefit',
+    track: 'BIRTH_CARE',
+    formId: 'birth-integrated-v1',
+    formCheckbox: 'svc_childbirth_benefit',
+    benefitType: 'CASH',
+    name: t('해산급여', 'Trợ cấp sinh nở', 'ប្រាក់ឧបត្ថម្ភសម្រាល', 'Childbirth Benefit'),
+    summary: t(
+      '기초생활보장 수급 가구의 출산에 지급하는 급여예요.',
+      'Khoản trợ cấp chi trả khi sinh con cho hộ gia đình đang nhận bảo đảm sinh kế cơ bản.',
+      'ប្រាក់ឧបត្ថម្ភសម្រាប់ការសម្រាលកូនរបស់គ្រួសារដែលទទួលបានការធានាជីវភាពមូលដ្ឋាន។',
+      'A benefit paid on childbirth to households receiving basic livelihood security.'
+    ),
+    benefit: t('출생아 1명당 70만원', '700.000 won cho mỗi trẻ', '700,000 វ៉ុនក្នុងមួយកូន', 'KRW 700,000 per child'),
+    conditionsText: [
+      t('기준중위소득 100% 이하', 'Dưới 100% thu nhập trung vị chuẩn', 'ក្រោម 100% នៃចំណូលមធ្យមស្តង់ដារ', '100% or below the standard median income'),
+    ],
+    applicationChannel: 'VISIT',
+    applicationOrg: t('관할 동 행정복지센터', 'Trung tâm hành chính phường phụ trách', 'មជ្ឈមណ្ឌលរដ្ឋបាលសង្កាត់ដែលទទួលបន្ទុក', 'The responsible neighborhood administrative welfare center'),
+    requiredDocuments: [t('신분증', 'Giấy tờ tùy thân', 'អត្តសញ្ញាណប័ណ្ណ', 'ID card')],
+    deadline: '출생일로부터 1년 이내',
+    sourceSnippet: '해산급여는 기초생활보장 수급자 중 출산(예정)한 경우 출생아 1명당 지급합니다.',
+    sourceUrl: 'https://www.bokjiro.go.kr/',
+    lastVerified: '2026-08-19',
+    conditions: {
+      visaStatus: null,
+      childNationality: ['KR'],
+      childAgeMonthsMax: 12,
+      requiresRegistration: true,
+      incomeMedianRatioMax: 100,
+    },
+  },
+  {
     programId: 'moel-injury-treatment',
     track: 'LABOR_INJURY',
     formId: 'labor-injury-v1',

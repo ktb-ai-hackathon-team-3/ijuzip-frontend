@@ -8,6 +8,7 @@ import { Button } from '../components/common/Button';
 import { StatusBadge } from '../components/common/StatusBadge';
 import { Skeleton } from '../components/common/Skeleton';
 import { PdfConfirmModal } from '../components/forms/PdfConfirmModal';
+import { disallowedCharacters } from '../api/koreanForm';
 import { useApplicationQuery, useGeneratePdfMutation, usePatchFieldsMutation } from '../hooks/useApplicationFlow';
 import { useUiStore } from '../stores/uiStore';
 import type { ApplicationFieldStatus } from '../api/types';
@@ -115,7 +116,7 @@ export function ApplicationPage() {
                 <div className={styles.checkedLabel}>{t('application.checkedProgramsLabel')}</div>
                 {data.checkedPrograms.map((p) => (
                   <div key={p.programId} className={styles.checkedItem}>
-                    {p.programId}
+                    {p.name.user}
                   </div>
                 ))}
               </div>
@@ -157,6 +158,16 @@ export function ApplicationPage() {
                       if (!lockedFromProfile) setValues((prev) => ({ ...prev, [key]: e.target.value }));
                     }}
                   />
+                  {/* Warn, never block: the name on an alien registration card
+                      is often the Latin spelling, and we cannot tell that apart
+                      from a wrong-language entry. */}
+                  {disallowedCharacters(values[key] ?? '').length > 0 && (
+                    <p className={styles.warning} role="status">
+                      {t('application.koreanOnlyWarning', {
+                        chars: disallowedCharacters(values[key] ?? '').join(' '),
+                      })}
+                    </p>
+                  )}
                   {field.note && <p className={styles.note}>{field.note.user}</p>}
                 </div>
               );})}

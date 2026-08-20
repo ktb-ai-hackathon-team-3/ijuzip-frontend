@@ -110,6 +110,7 @@
       "PROTECTED_PREFILLED": "Needs confirmation"
     },
     "protectedNotice": "Sensitive information is only used on this screen and is never sent to the AI.",
+    "koreanOnlyWarning": "Please type in Korean, or in the Latin spelling shown on your alien registration card. The form is printed in Korean. ({{chars}})",
     "generatePdf": "Generate PDF",
     "generatingPdf": "Generating…",
     "notReadyForPdf": "Please fill in the required fields before generating the PDF.",

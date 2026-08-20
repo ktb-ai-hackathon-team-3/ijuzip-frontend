@@ -98,14 +98,19 @@ function statusToCandidate(status?: string): Candidate['conditionStatus'] {
 export function resultsToCandidates(results: BackendResult[]): Candidate[] {
   return results.map((result, index) => ({
     programId: result.recordId,
+    name: local(result.nameKo ?? result.recordId, result.nameLocal),
     baseScore: Math.max(0.5, 0.95 - index * 0.04),
     conditionStatus: statusToCandidate(result.status),
     missingSlots: (result.checks ?? []).filter((check) => check.result === 'unknown').map((check) => check.field),
   }));
 }
 
-export function skeletonToCandidates(raw: { candidates?: Array<{ recordId: string; status?: string }> }): Candidate[] {
-  return resultsToCandidates((raw.candidates ?? []).map((item) => ({ recordId: item.recordId, status: item.status })));
+export function skeletonToCandidates(
+  raw: { candidates?: Array<{ recordId: string; status?: string; nameKo?: string; nameLocal?: string }> }
+): Candidate[] {
+  return resultsToCandidates((raw.candidates ?? []).map((item) => ({
+    recordId: item.recordId, status: item.status, nameKo: item.nameKo, nameLocal: item.nameLocal,
+  })));
 }
 
 export function buildCreateSessionResponse(
@@ -249,8 +254,14 @@ export function applicationFromBackend(raw: any): Application {
   const missing = raw.missingRequired ?? [];
   return {
     applicationId: raw.applicationId, formId: raw.formId,
-    formTitle: local(raw.formTitleKo),
-    checkedPrograms: (raw.checkedRecords ?? []).map((item: any) => ({ programId: item.recordId, formCheckbox: item.formCheckbox })),
+    // The form title and every field label are display-only — the values the
+    // user types are what lands on the PDF, and those stay Korean.
+    formTitle: local(raw.formTitleKo, raw.formTitleLocal),
+    checkedPrograms: (raw.checkedRecords ?? []).map((item: any) => ({
+      programId: item.recordId,
+      formCheckbox: item.formCheckbox,
+      name: local(item.nameKo ?? item.recordId, item.nameLocal),
+    })),
     fields: Object.fromEntries(Object.entries(raw.fields ?? {}).map(([key, value]) => [key, fieldFromBackend(key, value, missing)])),
     fieldLabels: Object.fromEntries(Object.entries(raw.fieldLabels ?? {}).map(([key, value]: [string, any]) => [key, local(value.ko, value.local)])),
   };

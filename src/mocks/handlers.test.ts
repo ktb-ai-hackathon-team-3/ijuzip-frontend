@@ -31,7 +31,7 @@ describe('mockBuildCandidates — §8.1 candidate scoring', () => {
 
   it('marks a program NEED_INFO when a gating slot (incomeBand) was skipped at onboarding', () => {
     const { candidates } = mockBuildCandidates('BIRTH_CARE', { ...birthCareProfile, track: 'BIRTH_CARE', language: 'ko' });
-    const grant = candidates.find((c) => c.programId === 'gg-birth-grant');
+    const grant = candidates.find((c) => c.programId === 'mohw-childbirth-benefit');
     expect(grant?.conditionStatus).toBe('NEED_INFO');
     expect(grant?.missingSlots).toContain('incomeBand');
   });

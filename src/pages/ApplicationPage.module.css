@@ -134,6 +134,14 @@
   margin-top: 4px;
 }
 
+/* 값이 서식에 못 찍히거나 한국어가 아닐 때. 막지 않고 알리기만 한다. */
+.warning {
+  font-size: 11.5px;
+  color: var(--amber);
+  margin-top: 4px;
+  line-height: 1.45;
+}
+
 .actionsRow {
   display: flex;
   gap: 10px;
