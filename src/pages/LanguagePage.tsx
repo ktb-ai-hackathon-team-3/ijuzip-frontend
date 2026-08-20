@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { Check } from 'lucide-react';
 import { Button } from '../components/common/Button';
+import { BrandLogo } from '../components/common/BrandLogo';
 import { useOnboardingStore } from '../stores/onboardingStore';
 import { SUPPORTED_LANGUAGES, LANGUAGE_NAMES } from '../i18n';
 import type { Language } from '../api/types';
@@ -33,10 +34,9 @@ export function LanguagePage() {
     <div className={styles.scroll}>
       <div className={styles.col}>
         <div className={styles.brand} aria-label={t('app.name')}>
-          <div className={styles.mark} aria-hidden="true"><span /><span /></div>
+          <BrandLogo className={styles.brandLogo} decorative />
           <div className={styles.brandCopy}>
             <div className={styles.brandName}>{t('app.name')}</div>
-            <div className={styles.brandTagline}>Life in Korea, made clearer</div>
           </div>
         </div>
         <h1 className={styles.h1} data-language={selected}>

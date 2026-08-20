@@ -343,7 +343,12 @@ export async function mockSendMessage(
         citedPrograms: [],
       });
       handlers.onAnswer({ text: answerText, citedPrograms: [] });
-      handlers.onSidebar({ ranking: session.view.ranking, viewFilter: session.view.viewFilter, visibleCount: session.view.visibleCount });
+      handlers.onSidebar({
+        ranking: session.view.ranking,
+        viewFilter: session.view.viewFilter,
+        visibleCount: session.view.visibleCount,
+        candidates: session.candidates,
+      });
       handlers.onDone({ quickReplies: quickRepliesFor(session) });
       return;
     }

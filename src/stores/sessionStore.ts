@@ -46,6 +46,8 @@ interface SessionState {
   /** Called when a `sidebar` SSE event arrives, to correct the just-appended assistant message's inferred intent (§4: intent itself is never sent over SSE, only inferable from whether `sidebar` fired). */
   markLastAssistantAsFilter: () => void;
   applySidebarUpdate: (view: SidebarView) => void;
+  applySidebarSnapshot: (candidates: Candidate[], view: SidebarView) => void;
+  applyAssessmentResults: (candidates: Candidate[]) => void;
   setLatestApplicationId: (id: string | null) => void;
   reset: () => void;
 }
@@ -109,6 +111,29 @@ export const useSessionStore = create<SessionState>((set) => ({
 
   applySidebarUpdate: (view) => {
     set({ view });
+  },
+
+  applySidebarSnapshot: (candidates, view) => {
+    set({ candidates, view });
+  },
+
+  applyAssessmentResults: (candidates) => {
+    set((state) => {
+      const scoreById = new Map(state.view?.ranking.map((entry) => [entry.programId, entry.score]) ?? []);
+      const ranking = candidates.map((candidate) => ({
+        programId: candidate.programId,
+        score: scoreById.get(candidate.programId) ?? candidate.baseScore,
+      }));
+      return {
+        candidates,
+        view: {
+          ranking,
+          viewFilter: state.view?.viewFilter ?? {},
+          sortBy: 'relevance',
+          visibleCount: ranking.length,
+        },
+      };
+    });
   },
 
   setLatestApplicationId: (id) => set({ latestApplicationId: id }),

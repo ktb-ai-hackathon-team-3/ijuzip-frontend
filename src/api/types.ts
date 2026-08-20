@@ -43,7 +43,7 @@ export interface Identity {
 
 export type ConditionStatus = 'LIKELY' | 'NEED_INFO' | 'BLOCKED';
 
-/** §5.2 — 온보딩 시 1회 확정, 세션 내내 고정. 대화는 순서·가시성만 바꾼다. */
+/** AI 대화 턴마다 상태가 다시 계산되는 사이드바 후보. */
 export interface Candidate {
   programId: string;
   /**
@@ -70,7 +70,7 @@ export interface ViewFilter {
 
 export type SortBy = 'relevance';
 
-/** §5.3 — 대화로 바뀌는 유일한 것. Candidate(불변)와 분리된다. */
+/** 후보와 함께 한 턴 단위로 교체되는 사이드바 표시 상태. */
 export interface SidebarView {
   ranking: RankingEntry[];
   viewFilter: ViewFilter;
@@ -260,6 +260,10 @@ export interface SseSidebarData {
   ranking: RankingEntry[];
   viewFilter: ViewFilter;
   visibleCount: number;
+  candidates: Candidate[];
+}
+export interface SseResultsData {
+  candidates: Candidate[];
 }
 export interface SseDoneData {
   quickReplies: QuickReply[];

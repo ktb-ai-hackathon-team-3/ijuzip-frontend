@@ -1,0 +1,92 @@
+.main {
+  flex: 1;
+  overflow-y: auto;
+  padding: clamp(28px, 6vw, 72px);
+  background:
+    radial-gradient(circle at 90% 10%, color-mix(in srgb, var(--green-100) 60%, transparent), transparent 34%),
+    var(--surface);
+}
+
+.panel {
+  width: min(100%, 680px);
+  margin: 0 auto;
+}
+
+.mockBanner {
+  display: inline-flex;
+  margin-bottom: 20px;
+  padding: 7px 10px;
+  border: 1px solid var(--green-300);
+  border-radius: 999px;
+  background: var(--green-50);
+  color: var(--green-800);
+  font-size: 11px;
+  font-weight: 750;
+  letter-spacing: 0.03em;
+}
+
+.eyebrow {
+  color: var(--green-700);
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.panel h1 {
+  margin: 10px 0 12px;
+  color: var(--text);
+  font-size: clamp(25px, 4vw, 38px);
+  letter-spacing: -0.04em;
+}
+
+.panel p {
+  margin: 0;
+  color: var(--text-muted);
+  font-size: 14px;
+  line-height: 1.75;
+}
+
+.controls {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+  margin-top: 28px;
+}
+
+.controls button {
+  min-height: 44px;
+  padding: 10px 14px;
+  border: 1px solid var(--border-strong);
+  border-radius: 11px;
+  background: var(--surface);
+  color: var(--text);
+  font: inherit;
+  font-size: 13px;
+  font-weight: 650;
+  cursor: pointer;
+  transition: background 150ms ease, border-color 150ms ease, transform 150ms ease;
+}
+
+.controls button:hover,
+.controls button[data-active='true'] {
+  border-color: var(--green-700);
+  background: var(--green-50);
+}
+
+.controls button:active {
+  transform: scale(0.985);
+}
+
+.steps {
+  margin: 28px 0 0;
+  padding: 20px 20px 20px 40px;
+  border-radius: 16px;
+  background: var(--sidebar-bg);
+  color: var(--text-muted);
+  font-size: 13px;
+  line-height: 1.8;
+}
+
+@media (max-width: 620px) {
+  .main { padding: 24px 18px; }
+  .controls { grid-template-columns: 1fr; }
+}

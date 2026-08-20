@@ -77,6 +77,21 @@ describe('backend v0.6 adapters', () => {
     expect(snapshot.assessmentStatus).toBe('pending');
   });
 
+  it('restores the latest chat candidate snapshot instead of stale assessment results', () => {
+    const snapshot = snapshotFromBackend({
+      track: 'birth_care',
+      profile: { lang: 'ko', region: { sido: '서울특별시' }, visaStatus: 'F-6' },
+      assessment: { status: 'done', results: [{ recordId: 'old', status: 'eligible' }] },
+      view: {
+        ranking: [{ recordId: 'live', score: null }], viewFilter: {}, visibleCount: 1,
+        candidates: [{ recordId: 'live', nameKo: '실시간 복지', nameLocal: '실시간 복지', status: 'need_check' }],
+      },
+    });
+
+    expect(snapshot.candidates).toHaveLength(1);
+    expect(snapshot.candidates[0]).toMatchObject({ programId: 'live', conditionStatus: 'NEED_INFO' });
+  });
+
   it('maps program and application field names without leaking backend shapes into UI', () => {
     const detail = programDetailFromBackend({ recordId: 'p1', nameKo: '아동수당', nameLocal: 'Trợ cấp', reasonKo: '설명', sourceUrl: 'https://example.com' });
     expect(detail.name.user).toBe('Trợ cấp');
@@ -107,5 +122,24 @@ describe('backend v0.6 adapters', () => {
 
     expect(app.fields.bankName.status).toBe('UNVERIFIED');
     expect(app.previewImages).toEqual([]);
+  });
+
+  it('uses Spring protectedFields instead of guessing field names', () => {
+    const app = applicationFromBackend({
+      applicationId: 'a1', formId: 'form-birth-integrated', formTitleKo: '신청서',
+      protectedFields: ['applicantRegNo', 'applicantAddress', 'motherName'],
+      missingRequired: ['applicantRegNo', 'applicantAddress', 'motherName', 'applicantRelation'],
+      fields: {
+        applicantRegNo: { value: null, source: 'unconfirmed' },
+        applicantAddress: { value: null, source: 'unconfirmed' },
+        motherName: { value: null, source: 'unconfirmed' },
+        applicantRelation: { value: null, source: 'unconfirmed' },
+      },
+    });
+
+    expect(app.fields.applicantRegNo.status).toBe('PROTECTED');
+    expect(app.fields.applicantAddress.status).toBe('PROTECTED');
+    expect(app.fields.motherName.status).toBe('PROTECTED');
+    expect(app.fields.applicantRelation.status).toBe('MISSING');
   });
 });

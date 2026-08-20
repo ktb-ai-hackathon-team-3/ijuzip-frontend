@@ -44,7 +44,8 @@ function DocumentLanguageSync() {
 }
 
 export default function App() {
-  const bootstrapStatus = useSessionBootstrap();
+  const isSidebarDemo = import.meta.env.DEV && window.location.pathname === '/dev/sidebar-pagination';
+  const bootstrapStatus = useSessionBootstrap(isSidebarDemo);
 
   return (
     <QueryClientProvider client={queryClient}>

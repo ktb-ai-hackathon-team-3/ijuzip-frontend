@@ -173,6 +173,7 @@ export const sseSidebarDataSchema = z.object({
   ranking: z.array(rankingEntrySchema),
   viewFilter: z.record(z.string(), z.string().optional()),
   visibleCount: z.number(),
+  candidates: z.array(candidateSchema),
 });
 export const sseDoneDataSchema = z.object({
   quickReplies: z.array(

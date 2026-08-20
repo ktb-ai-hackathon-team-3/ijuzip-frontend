@@ -76,7 +76,7 @@ export function toBackendSessionRequest(req: { language: Language; profile: Omit
   };
 }
 
-function statusToCandidate(status?: string): Candidate['conditionStatus'] {
+export function statusToCandidate(status?: string): Candidate['conditionStatus'] {
   if (status === 'not_eligible' || status === 'blocked') return 'BLOCKED';
   if (status === 'eligible' || status === 'likely') return 'LIKELY';
   return 'NEED_INFO';
@@ -98,6 +98,18 @@ export function skeletonToCandidates(
   return resultsToCandidates((raw.candidates ?? []).map((item) => ({
     recordId: item.recordId, status: item.status, nameKo: item.nameKo, nameLocal: item.nameLocal,
   })));
+}
+
+export function sidebarCandidatesFromBackend(
+  raw: Array<{ recordId: string; status?: string; nameKo?: string; nameLocal?: string }>,
+): Candidate[] {
+  return raw.map((item, index) => ({
+    programId: item.recordId,
+    name: local(item.nameKo ?? item.recordId, item.nameLocal),
+    baseScore: Math.max(0, 1 - index * 0.001),
+    conditionStatus: statusToCandidate(item.status),
+    missingSlots: [],
+  }));
 }
 
 export function buildCreateSessionResponse(
@@ -168,8 +180,12 @@ function profileFromBackend(raw: BackendProfile, track: Track): Profile {
 }
 
 function viewFromBackend(raw: any): SidebarView {
+  const ranking = raw?.ranking ?? [];
   return {
-    ranking: (raw?.ranking ?? []).map((item: any) => ({ programId: item.recordId, score: item.score ?? 0 })),
+    ranking: ranking.map((item: any, index: number) => ({
+      programId: item.recordId,
+      score: item.score ?? Math.max(0, 1 - index / Math.max(ranking.length, 1)),
+    })),
     viewFilter: raw?.viewFilter ?? {},
     sortBy: 'relevance',
     visibleCount: raw?.visibleCount ?? 5,
@@ -192,7 +208,8 @@ function messageFromBackend(raw: any): Message {
 export function snapshotFromBackend(raw: any): SessionSnapshot {
   const track = raw.track ? trackFromBackend(raw.track) : 'BIRTH_CARE';
   const results: BackendResult[] = raw.assessment?.results ?? [];
-  const candidates = resultsToCandidates(results);
+  const liveCandidates = sidebarCandidatesFromBackend(raw.view?.candidates ?? []);
+  const candidates = liveCandidates.length > 0 ? liveCandidates : resultsToCandidates(results);
   const view = viewFromBackend(raw.view);
   if (view.ranking.length === 0) view.ranking = candidates.map((c) => ({ programId: c.programId, score: c.baseScore }));
   return {

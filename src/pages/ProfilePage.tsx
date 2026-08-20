@@ -1,4 +1,5 @@
-import { Navigate, useNavigate } from 'react-router-dom';
+import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -9,6 +10,8 @@ import { useOnboardingStore } from '../stores/onboardingStore';
 import { useSessionStore } from '../stores/sessionStore';
 import { useUiStore } from '../stores/uiStore';
 import { Button } from '../components/common/Button';
+import { Modal } from '../components/common/Modal';
+import { CircleHelp } from 'lucide-react';
 import { VISA_OPTIONS, REGION_OPTIONS, districtLabel } from '../i18n/optionData';
 import type { Language, Profile } from '../api/types';
 import styles from './ProfilePage.module.css';
@@ -19,9 +22,10 @@ export function ProfilePage() {
   const navigate = useNavigate();
   const lang = i18n.language as Language;
 
-  const language = useOnboardingStore((s) => s.language);
+  const language = useOnboardingStore((s) => s.language) ?? lang;
   const setSession = useSessionStore((s) => s.setSession);
   const pushToast = useUiStore((s) => s.pushToast);
+  const [visaHelpOpen, setVisaHelpOpen] = useState(false);
 
   const schema = createProfileSchema(t);
 
@@ -53,12 +57,7 @@ export function ProfilePage() {
     onError: () => pushToast(t('errors.sessionCreateFailed'), 'error'),
   });
 
-  if (!language) {
-    return <Navigate to="/" replace />;
-  }
-
   function onSubmit(values: ProfileFormValues) {
-    if (!language) return;
     const profile: Omit<Profile, 'track' | 'language'> = {
       visaStatus: values.visaStatus,
       region: { sido: values.region.sido, sigungu: values.region.sigungu },
@@ -91,9 +90,14 @@ export function ProfilePage() {
         <form onSubmit={form.handleSubmit(onSubmit)} noValidate>
           <div className={styles.grid}>
             <div className={styles.field}>
-              <label className={styles.label} htmlFor="visaStatus">
-                {t('onboarding.fields.visaStatus')} <span className={styles.req}>*</span>
-              </label>
+              <div className={styles.labelWithHelp}>
+                <label className={styles.label} htmlFor="visaStatus">
+                  {t('onboarding.fields.visaStatus')} <span className={styles.req}>*</span>
+                </label>
+                <button type="button" className={styles.helpButton} aria-label={t('onboarding.visaHelp.open')} onClick={() => setVisaHelpOpen(true)}>
+                  <CircleHelp size={15} aria-hidden="true" />
+                </button>
+              </div>
               <select
                 id="visaStatus"
                 className={styles.select}
@@ -191,6 +195,23 @@ export function ProfilePage() {
           </div>
         </form>
       </div>
+      {visaHelpOpen && (
+        <Modal titleId="visa-help-title" onClose={() => setVisaHelpOpen(false)}>
+          <div className={styles.visaHelpContent}>
+            <h2 id="visa-help-title">{t('onboarding.visaHelp.title')}</h2>
+            <p className={styles.visaHelpIntro}>{t('onboarding.visaHelp.intro')}</p>
+            <div className={styles.visaHelpList}>
+              {VISA_OPTIONS.map((visa) => (
+                <section className={styles.visaHelpItem} key={visa.code}>
+                  <strong>{visa.label[lang]}</strong>
+                  <p>{t(`onboarding.visaHelp.visas.${visa.code}`)}</p>
+                </section>
+              ))}
+            </div>
+            <p className={styles.visaHelpCheck}>{t('onboarding.visaHelp.checkCard')}</p>
+          </div>
+        </Modal>
+      )}
     </div>
   );
 }

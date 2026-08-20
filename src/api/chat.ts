@@ -2,11 +2,13 @@ import { fetchEventSource } from '@microsoft/fetch-event-source';
 import { API_BASE_URL, USE_MOCK_API, ApiRequestError, notifySessionExpired } from './client';
 import { mockSendMessage } from '../mocks/handlers';
 import { sseTokenDataSchema } from '../schemas/api';
-import type { SendMessagePayload, SseAnswerData, SseDoneData, SseSidebarData } from './types';
+import { resultsToCandidates, sidebarCandidatesFromBackend } from './backendAdapters';
+import type { SendMessagePayload, SseAnswerData, SseDoneData, SseResultsData, SseSidebarData } from './types';
 
 export interface ChatEventHandlers {
   onAnswer: (data: SseAnswerData) => void;
   onSidebar: (data: SseSidebarData) => void;
+  onResults: (data: SseResultsData) => void;
   onDone: (data: SseDoneData) => void;
   onError: (code: string, message: string) => void;
   /**
@@ -17,6 +19,52 @@ export interface ChatEventHandlers {
    * addition once that's decided, without another handler-interface change.
    */
   onToken?: (text: string) => void;
+}
+
+/** Pure SSE event adapter; unit tests exercise this without opening a network connection. */
+export function dispatchChatEvent(event: string, raw: any, handlers: ChatEventHandlers): boolean {
+  switch (event) {
+    case 'token':
+      handlers.onToken?.(sseTokenDataSchema.parse(raw).text);
+      return false;
+    case 'answer':
+      handlers.onAnswer({
+        text: { ko: raw.textKo ?? '', user: raw.textLocal ?? raw.textKo ?? '' },
+        citedPrograms: raw.citedRecords ?? [],
+      });
+      return false;
+    case 'sidebar': {
+      const ranking = raw.ranking ?? [];
+      handlers.onSidebar({
+        ranking: ranking.map((item: any, index: number) => ({
+          programId: item.recordId,
+          score: item.score ?? Math.max(0, 1 - index / Math.max(ranking.length, 1)),
+        })),
+        viewFilter: raw.viewFilter ?? {},
+        visibleCount: raw.visibleCount ?? 5,
+        candidates: sidebarCandidatesFromBackend(raw.candidates ?? []),
+      });
+      return false;
+    }
+    case 'results':
+      handlers.onResults({ candidates: resultsToCandidates(raw.results ?? []) });
+      return false;
+    case 'done':
+      handlers.onDone({
+        quickReplies: (raw.quickReplies ?? []).map((item: any) => ({
+          value: item.value,
+          label: typeof item.label === 'string'
+            ? { ko: item.labelKo ?? item.label, user: item.labelLocal ?? item.label }
+            : item.label,
+        })),
+      });
+      return true;
+    case 'error':
+      handlers.onError(raw.code ?? 'UNKNOWN_ERROR', raw.message ?? 'Chat processing failed.');
+      return true;
+    default:
+      return false;
+  }
 }
 
 /**
@@ -82,44 +130,7 @@ export async function sendChatMessage(
         if (!ev.event) return;
         try {
           const raw: unknown = JSON.parse(ev.data);
-          switch (ev.event) {
-            case 'token':
-              handlers.onToken?.(sseTokenDataSchema.parse(raw).text);
-              break;
-            case 'answer':
-              handlers.onAnswer({
-                text: { ko: (raw as any).textKo ?? '', user: (raw as any).textLocal ?? (raw as any).textKo ?? '' },
-                citedPrograms: (raw as any).citedRecords ?? [],
-              });
-              break;
-            case 'sidebar':
-              handlers.onSidebar({
-                ranking: ((raw as any).ranking ?? []).map((item: any) => ({ programId: item.recordId, score: item.score ?? 0 })),
-                viewFilter: (raw as any).viewFilter ?? {},
-                visibleCount: (raw as any).visibleCount ?? 5,
-              });
-              break;
-            case 'done':
-              terminalEventReceived = true;
-              handlers.onDone({
-                quickReplies: ((raw as any).quickReplies ?? []).map((item: any) => ({
-                  value: item.value,
-                  label: typeof item.label === 'string'
-                    ? {
-                        ko: item.labelKo ?? item.label,
-                        user: item.labelLocal ?? item.label,
-                      }
-                    : item.label,
-                })),
-              });
-              break;
-            case 'error': {
-              terminalEventReceived = true;
-              const data = raw as { code?: string; message?: string };
-              handlers.onError(data.code ?? 'UNKNOWN_ERROR', data.message ?? 'Chat processing failed.');
-              break;
-            }
-          }
+          terminalEventReceived = dispatchChatEvent(ev.event, raw, handlers) || terminalEventReceived;
         } catch {
           terminalEventReceived = true;
           handlers.onError('INVALID_SSE_EVENT', 'The server returned an invalid SSE event.');

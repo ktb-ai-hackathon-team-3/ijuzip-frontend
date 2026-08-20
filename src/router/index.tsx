@@ -4,6 +4,7 @@ import { LanguagePage } from '../pages/LanguagePage';
 import { ProfilePage } from '../pages/ProfilePage';
 import { ConsultationPage } from '../pages/ConsultationPage';
 import { ApplicationPage } from '../pages/ApplicationPage';
+import { SidebarPaginationDemoPage } from '../pages/SidebarPaginationDemoPage';
 import { useSessionStore } from '../stores/sessionStore';
 
 /** §5: URL and screen state must agree, including on refresh/back — routes below are the whole state machine. */
@@ -33,6 +34,9 @@ const router = createBrowserRouter([
       </RequireSession>
     ),
   },
+  ...(import.meta.env.DEV
+    ? [{ path: '/dev/sidebar-pagination', element: <SidebarPaginationDemoPage /> }]
+    : []),
   { path: '*', element: <Navigate to="/" replace /> },
 ]);
 

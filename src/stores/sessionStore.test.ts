@@ -1,6 +1,6 @@
 import { describe, it, expect, beforeEach } from 'vitest';
 import { useSessionStore } from './sessionStore';
-import type { Profile } from '../api/types';
+import type { Candidate, Profile } from '../api/types';
 
 const profile: Profile = {
   track: 'BIRTH_CARE',
@@ -50,5 +50,32 @@ describe('sessionStore', () => {
     store.markLastAssistantAsFilter();
     const last = useSessionStore.getState().messages[1];
     expect(last.role === 'assistant' && last.intent).toBe('FILTER');
+  });
+
+  it('applies AI candidates and ranking atomically for one sidebar event', () => {
+    const candidates: Candidate[] = [{
+      programId: 'p1', name: { ko: '복지', user: '복지' }, baseScore: 1,
+      conditionStatus: 'NEED_INFO', missingSlots: [],
+    }];
+    useSessionStore.getState().applySidebarSnapshot(candidates, {
+      ranking: [{ programId: 'p1', score: 0 }], viewFilter: {}, sortBy: 'relevance', visibleCount: 1,
+    });
+
+    const state = useSessionStore.getState();
+    expect(state.candidates[0].conditionStatus).toBe('NEED_INFO');
+    expect(state.view?.ranking[0].programId).toBe('p1');
+  });
+
+  it('replaces preview candidates with final results while preserving known ranking scores', () => {
+    useSessionStore.setState({
+      view: { ranking: [{ programId: 'p1', score: 0.8 }], viewFilter: {}, sortBy: 'relevance', visibleCount: 1 },
+    });
+    useSessionStore.getState().applyAssessmentResults([{
+      programId: 'p1', name: { ko: '복지', user: '복지' }, baseScore: 0.5,
+      conditionStatus: 'LIKELY', missingSlots: [],
+    }]);
+
+    expect(useSessionStore.getState().view?.ranking[0].score).toBe(0.8);
+    expect(useSessionStore.getState().candidates[0].conditionStatus).toBe('LIKELY');
   });
 });

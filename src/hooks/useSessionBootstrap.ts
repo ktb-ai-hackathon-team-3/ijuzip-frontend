@@ -11,13 +11,14 @@ export type BootstrapStatus = 'idle' | 'restoring' | 'ready' | 'no-session' | 'e
  * app resume — §7.2), restores the whole session from Spring; otherwise
  * leaves the user to go through onboarding. Mounted once above the router.
  */
-export function useSessionBootstrap(): BootstrapStatus {
-  const [status, setStatus] = useState<BootstrapStatus>('idle');
+export function useSessionBootstrap(disabled = false): BootstrapStatus {
+  const [status, setStatus] = useState<BootstrapStatus>(disabled ? 'ready' : 'idle');
   const hydrateFromStorage = useSessionStore((s) => s.hydrateFromStorage);
   const restoreSnapshot = useSessionStore((s) => s.restoreSnapshot);
   const reset = useSessionStore((s) => s.reset);
 
   useEffect(() => {
+    if (disabled) return;
     let cancelled = false;
 
     const waitForNextPoll = () => new Promise<void>((resolve) => {
@@ -62,7 +63,7 @@ export function useSessionBootstrap(): BootstrapStatus {
       cancelled = true;
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [disabled]);
 
   return status;
 }

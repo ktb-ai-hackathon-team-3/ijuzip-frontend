@@ -44,7 +44,7 @@
   --space-6: 24px;
   --space-8: 32px;
 
-  --font-sans: 'Noto Serif KR', 'Noto Serif Khmer', 'Noto Serif', serif;
+  --font-sans: 'Noto Sans KR', 'Noto Sans', 'Noto Sans Khmer', sans-serif;
   --font-display: var(--font-sans);
 }
 

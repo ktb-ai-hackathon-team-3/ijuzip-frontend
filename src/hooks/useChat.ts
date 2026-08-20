@@ -19,7 +19,8 @@ export function useChat() {
   const lastSeq = useSessionStore((s) => s.lastSeq);
   const appendMessage = useSessionStore((s) => s.appendMessage);
   const markLastAssistantAsFilter = useSessionStore((s) => s.markLastAssistantAsFilter);
-  const applySidebarUpdate = useSessionStore((s) => s.applySidebarUpdate);
+  const applySidebarSnapshot = useSessionStore((s) => s.applySidebarSnapshot);
+  const applyAssessmentResults = useSessionStore((s) => s.applyAssessmentResults);
 
   const chatThinking = useUiStore((s) => s.chatThinking);
   const setChatThinking = useUiStore((s) => s.setChatThinking);
@@ -65,7 +66,15 @@ export function useChat() {
           },
           onSidebar: (data) => {
             markLastAssistantAsFilter();
-            applySidebarUpdate({ ranking: data.ranking, viewFilter: data.viewFilter, sortBy: 'relevance', visibleCount: data.visibleCount });
+            applySidebarSnapshot(data.candidates, {
+              ranking: data.ranking,
+              viewFilter: data.viewFilter,
+              sortBy: 'relevance',
+              visibleCount: data.visibleCount,
+            });
+          },
+          onResults: (data) => {
+            applyAssessmentResults(data.candidates);
           },
           onDone: (data) => {
             setQuickReplies(data.quickReplies);
@@ -99,7 +108,8 @@ export function useChat() {
       lastSeq,
       appendMessage,
       markLastAssistantAsFilter,
-      applySidebarUpdate,
+      applySidebarSnapshot,
+      applyAssessmentResults,
       setChatThinking,
       pushToast,
       t,
