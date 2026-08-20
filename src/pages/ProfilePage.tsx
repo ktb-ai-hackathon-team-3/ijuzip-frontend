@@ -3,25 +3,17 @@ import { useTranslation } from 'react-i18next';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useMutation } from '@tanstack/react-query';
-import { Baby, HardHat } from 'lucide-react';
 import { createProfileSchema, type ProfileFormValues } from '../schemas/onboarding';
 import { createSession } from '../api/sessions';
 import { useOnboardingStore } from '../stores/onboardingStore';
 import { useSessionStore } from '../stores/sessionStore';
 import { useUiStore } from '../stores/uiStore';
 import { Button } from '../components/common/Button';
-import { VISA_OPTIONS, NATIONALITY_OPTIONS, INCOME_BAND_OPTIONS, EMPLOYMENT_STATUS_OPTIONS, REGION_OPTIONS } from '../i18n/optionData';
-import type { Language, Profile, Track } from '../api/types';
+import { VISA_OPTIONS, REGION_OPTIONS, districtLabel } from '../i18n/optionData';
+import type { Language, Profile } from '../api/types';
 import styles from './ProfilePage.module.css';
 
-const HOUSEHOLD_SIZES = ['1', '2', '3', '4', '5', '6'];
-
-/**
- * The only onboarding input screen (front_ing.md §2/§3): there is no
- * separate track picker. The two "signal" sections below (child birth
- * date vs. injury date) double as the track decision — whichever one the
- * user actually fills in determines `track` at submit time.
- */
+/** Compact onboarding for the track-free welfare search. */
 export function ProfilePage() {
   const { t, i18n } = useTranslation();
   const navigate = useNavigate();
@@ -38,12 +30,7 @@ export function ProfilePage() {
     defaultValues: {
       visaStatus: '',
       region: { sido: '', sigungu: '' },
-      childBirthDate: '',
-      childNationality: '',
-      employmentStatus: '',
-      injuryDate: '',
-      householdSize: '',
-      incomeBand: '',
+      hasChildren: '',
     },
   });
 
@@ -56,12 +43,12 @@ export function ProfilePage() {
       setSession({
         sessionId: data.sessionId,
         token: data.token,
-        track: variables.track,
-        profile: { ...variables.profile, track: variables.track, language: variables.language },
+        track: 'BIRTH_CARE',
+        profile: { ...variables.profile, track: 'BIRTH_CARE', language: variables.language },
         candidates: data.candidates,
         greeting: data.greeting,
       });
-      navigate('/consultation');
+      navigate('/consultation', { viewTransition: true });
     },
     onError: () => pushToast(t('errors.sessionCreateFailed'), 'error'),
   });
@@ -72,26 +59,23 @@ export function ProfilePage() {
 
   function onSubmit(values: ProfileFormValues) {
     if (!language) return;
-    // §2 of front_ing.md: whichever signal field is actually filled decides
-    // the track. The form's own superRefine already guarantees at least one
-    // is present (and both can't be blank) by the time we get here.
-    const track: Track = values.childBirthDate ? 'BIRTH_CARE' : 'LABOR_INJURY';
     const profile: Omit<Profile, 'track' | 'language'> = {
       visaStatus: values.visaStatus,
       region: { sido: values.region.sido, sigungu: values.region.sigungu },
       gender: null,
       birthYear: null,
-      childBirthDate: track === 'BIRTH_CARE' ? (values.childBirthDate ?? null) : null,
-      childNationality: track === 'BIRTH_CARE' ? (values.childNationality ?? null) : null,
-      householdSize: values.householdSize ? Number(values.householdSize) : null,
-      incomeBand: values.incomeBand ? (values.incomeBand as Profile['incomeBand']) : null,
-      employmentStatus: track === 'LABOR_INJURY' ? (values.employmentStatus as Profile['employmentStatus']) : null,
-      injuryDate: track === 'LABOR_INJURY' ? (values.injuryDate ?? null) : null,
+      childBirthDate: null,
+      childNationality: null,
+      householdSize: null,
+      incomeBand: null,
+      employmentStatus: null,
+      injuryDate: null,
     };
-    mutation.mutate({ language, track, profile });
+    mutation.mutate({ language, profile, hasChildren: values.visaStatus === 'F-6' ? values.hasChildren === 'yes' : null });
   }
 
   const err = form.formState.errors;
+  const selectedVisa = form.watch('visaStatus');
 
   return (
     <div className={styles.scroll}>
@@ -110,7 +94,16 @@ export function ProfilePage() {
               <label className={styles.label} htmlFor="visaStatus">
                 {t('onboarding.fields.visaStatus')} <span className={styles.req}>*</span>
               </label>
-              <select id="visaStatus" className={styles.select} aria-invalid={!!err.visaStatus} {...form.register('visaStatus')}>
+              <select
+                id="visaStatus"
+                className={styles.select}
+                aria-invalid={!!err.visaStatus}
+                {...form.register('visaStatus')}
+                onChange={(e) => {
+                  form.setValue('visaStatus', e.target.value, { shouldDirty: true, shouldValidate: true });
+                  if (e.target.value !== 'F-6') form.setValue('hasChildren', '', { shouldValidate: false });
+                }}
+              >
                 <option value="">{t('onboarding.placeholders.select')}</option>
                 {VISA_OPTIONS.map((opt) => (
                   <option key={opt.code} value={opt.code}>
@@ -120,6 +113,21 @@ export function ProfilePage() {
               </select>
               {err.visaStatus && <span className={styles.errorText}>{err.visaStatus.message}</span>}
             </div>
+
+            {selectedVisa === 'F-6' && (
+              <fieldset className={`${styles.childField} riseIn`}>
+                <legend>{t('onboarding.fields.hasChildren')} <span className={styles.req}>*</span></legend>
+                <label className={styles.choiceLabel}>
+                  <input type="radio" value="yes" {...form.register('hasChildren')} />
+                  <span>{t('common.yes')}</span>
+                </label>
+                <label className={styles.choiceLabel}>
+                  <input type="radio" value="no" {...form.register('hasChildren')} />
+                  <span>{t('common.no')}</span>
+                </label>
+                {err.hasChildren && <span className={styles.errorText}>{err.hasChildren.message}</span>}
+              </fieldset>
+            )}
 
             <div className={styles.field}>
               <label className={styles.label} htmlFor="sido">
@@ -155,120 +163,26 @@ export function ProfilePage() {
                 aria-invalid={!!err.region?.sigungu}
                 disabled={!selectedRegion}
                 {...form.register('region.sigungu')}
+                onChange={(e) => {
+                  form.setValue('region.sigungu', e.target.value, {
+                    shouldDirty: true,
+                    shouldTouch: true,
+                    shouldValidate: true,
+                  });
+                }}
               >
                 <option value="">{t('onboarding.placeholders.select')}</option>
                 {selectedRegion?.districts.map((district) => (
-                  <option key={district} value={district}>{district}</option>
+                  <option key={district} value={district}>{districtLabel(district, lang)}</option>
                 ))}
               </select>
               {err.region?.sigungu && <span className={styles.errorText}>{err.region.sigungu.message}</span>}
             </div>
 
-            <div className={styles.field}>
-              <label className={styles.label} htmlFor="householdSize">
-                {t('onboarding.fields.householdSize')} <span className={styles.opt}>({t('onboarding.optionalTag')})</span>
-              </label>
-              <select id="householdSize" className={styles.select} {...form.register('householdSize')}>
-                <option value="">{t('onboarding.skipTag')}</option>
-                {HOUSEHOLD_SIZES.map((n) => (
-                  <option key={n} value={n}>
-                    {n}
-                  </option>
-                ))}
-              </select>
-            </div>
-            <div className={styles.field}>
-              <label className={styles.label} htmlFor="incomeBand">
-                {t('onboarding.fields.incomeBand')} <span className={styles.opt}>({t('onboarding.optionalTag')})</span>
-              </label>
-              <select id="incomeBand" className={styles.select} {...form.register('incomeBand')}>
-                <option value="">{t('onboarding.skipTag')}</option>
-                {INCOME_BAND_OPTIONS.map((opt) => (
-                  <option key={opt.code} value={opt.code}>
-                    {opt.label[lang]}
-                  </option>
-                ))}
-              </select>
-            </div>
-          </div>
-
-          <p className={styles.trackHint}>{t('onboarding.trackHint')}</p>
-
-          <div className={styles.signalGrid}>
-            <div className={`${styles.signalCard} riseIn`}>
-              <div className={styles.signalHead}>
-                <Baby size={16} aria-hidden="true" />
-                <span>{t('onboarding.sectionBirth')}</span>
-              </div>
-              <div className={styles.field}>
-                <label className={styles.label} htmlFor="childBirthDate">
-                  {t('onboarding.fields.childBirthDate')}
-                </label>
-                <input
-                  id="childBirthDate"
-                  type="date"
-                  className={styles.dateInput}
-                  aria-invalid={!!err.childBirthDate}
-                  {...form.register('childBirthDate')}
-                />
-                {err.childBirthDate && <span className={styles.errorText}>{err.childBirthDate.message}</span>}
-              </div>
-              <div className={styles.field}>
-                <label className={styles.label} htmlFor="childNationality">
-                  {t('onboarding.fields.childNationality')}
-                </label>
-                <select
-                  id="childNationality"
-                  className={styles.select}
-                  aria-invalid={!!err.childNationality}
-                  {...form.register('childNationality')}
-                >
-                  <option value="">{t('onboarding.placeholders.select')}</option>
-                  {NATIONALITY_OPTIONS.map((opt) => (
-                    <option key={opt.code} value={opt.code}>
-                      {opt.label[lang]}
-                    </option>
-                  ))}
-                </select>
-                {err.childNationality && <span className={styles.errorText}>{err.childNationality.message}</span>}
-              </div>
-            </div>
-
-            <div className={`${styles.signalCard} riseIn`} style={{ ['--delay' as string]: '70ms' }}>
-              <div className={styles.signalHead}>
-                <HardHat size={16} aria-hidden="true" />
-                <span>{t('onboarding.sectionLabor')}</span>
-              </div>
-              <div className={styles.field}>
-                <label className={styles.label} htmlFor="injuryDate">
-                  {t('onboarding.fields.injuryDate')}
-                </label>
-                <input id="injuryDate" type="date" className={styles.dateInput} {...form.register('injuryDate')} />
-              </div>
-              <div className={styles.field}>
-                <label className={styles.label} htmlFor="employmentStatus">
-                  {t('onboarding.fields.employmentStatus')}
-                </label>
-                <select
-                  id="employmentStatus"
-                  className={styles.select}
-                  aria-invalid={!!err.employmentStatus}
-                  {...form.register('employmentStatus')}
-                >
-                  <option value="">{t('onboarding.placeholders.select')}</option>
-                  {EMPLOYMENT_STATUS_OPTIONS.map((opt) => (
-                    <option key={opt.code} value={opt.code}>
-                      {opt.label[lang]}
-                    </option>
-                  ))}
-                </select>
-                {err.employmentStatus && <span className={styles.errorText}>{err.employmentStatus.message}</span>}
-              </div>
-            </div>
           </div>
 
           <div className={styles.actions}>
-            <Button type="button" variant="secondary" onClick={() => navigate('/')}>
+            <Button type="button" variant="secondary" onClick={() => navigate('/', { viewTransition: true })}>
               {t('onboarding.back')}
             </Button>
             <Button type="submit" variant="primary" fullWidth loading={mutation.isPending}>

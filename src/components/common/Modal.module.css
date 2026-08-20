@@ -1,7 +1,8 @@
 .backdrop {
   position: fixed;
   inset: 0;
-  background: var(--overlay);
+  background: rgba(25, 48, 39, .46);
+  backdrop-filter: blur(8px);
   z-index: 200;
   display: flex;
   align-items: center;
@@ -12,11 +13,12 @@
 .card {
   position: relative;
   width: 100%;
-  max-width: 560px;
+  max-width: 640px;
   max-height: 88vh;
   background: var(--surface);
-  border-radius: var(--radius-lg);
+  border-radius: 22px;
   box-shadow: var(--shadow-lg);
+  border: 1px solid rgba(255,255,255,.34);
   display: flex;
   flex-direction: column;
   overflow: hidden;
@@ -36,13 +38,15 @@
 
 .scroll {
   overflow-y: auto;
-  padding: var(--space-6) var(--space-6) var(--space-2);
+  padding: 30px 32px 10px;
 }
 
 .footer {
   display: flex;
   gap: var(--space-3);
-  padding: var(--space-5) var(--space-6);
+  padding: 18px 32px 24px;
+  background: color-mix(in srgb, var(--surface) 94%, transparent);
+  backdrop-filter: blur(10px);
   border-top: 1px solid var(--border);
   flex-shrink: 0;
 }

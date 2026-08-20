@@ -26,19 +26,23 @@ export function LanguagePage() {
 
   function start() {
     setLanguage(selected);
-    navigate('/onboarding/profile');
+    navigate('/onboarding/profile', { viewTransition: true });
   }
 
   return (
     <div className={styles.scroll}>
       <div className={styles.col}>
-        <div className={styles.mark} aria-hidden="true">
-          I
+        <div className={styles.brand} aria-label={t('app.name')}>
+          <div className={styles.mark} aria-hidden="true"><span /><span /></div>
+          <div className={styles.brandCopy}>
+            <div className={styles.brandName}>{t('app.name')}</div>
+            <div className={styles.brandTagline}>Life in Korea, made clearer</div>
+          </div>
         </div>
-        <h1 className={styles.h1}>
-          {t('language.title1')}
+        <h1 className={styles.h1} data-language={selected}>
+          <span className={styles.highlight}>{t('language.title1')}</span>
           <br />
-          {t('language.title2')}
+          <span className={styles.highlight}>{t('language.title2')}</span>
         </h1>
         <p className={styles.sub}>
           {t('language.subtitle1')}

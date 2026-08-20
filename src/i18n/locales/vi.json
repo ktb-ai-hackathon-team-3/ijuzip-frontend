@@ -1,10 +1,10 @@
 {
   "app": { "name": "IJU.zip" },
   "language": {
-    "title1": "Xin chào, tôi là IJU.zip.",
-    "title2": "Tôi có thể giúp gì cho bạn hôm nay?",
-    "subtitle1": "Vui lòng chọn ngôn ngữ bạn muốn sử dụng.",
-    "subtitle2": "Chúng tôi sẽ giúp bạn tìm chương trình phúc lợi phù hợp và hỗ trợ nộp đơn.",
+    "title1": "Hướng dẫn thân thiện",
+    "title2": "cho cuộc sống tại Hàn Quốc.",
+    "subtitle1": "Tìm chương trình phúc lợi phù hợp với hoàn cảnh của bạn,",
+    "subtitle2": "và cùng hoàn thành từng bước đăng ký.",
     "startBtn": "Bắt đầu bằng ngôn ngữ đã chọn"
   },
   "onboarding": {
@@ -12,7 +12,7 @@
     "title1": "Để tìm hỗ trợ phù hợp với bạn,",
     "title2": "vui lòng cho biết một số thông tin cơ bản",
     "subtitle": "Thông tin của bạn sẽ được dùng để tìm chương trình phù hợp.",
-    "trackHint": "Chỉ cần điền mục nào phù hợp với tình huống của bạn trong hai mục dưới đây — có thể bỏ trống mục còn lại.",
+    "trackHint": "Bạn đang tìm hỗ trợ về lĩnh vực nào? Hãy chọn một mục để chỉ xem những câu hỏi cần thiết.",
     "sectionBirth": "Mang thai · Sinh con · Nuôi con",
     "sectionLabor": "Tai nạn lao động · Việc làm",
     "optionalTag": "không bắt buộc",
@@ -24,6 +24,7 @@
       "region": "Khu vực sinh sống",
       "sido": "Tỉnh / thành phố trực thuộc trung ương",
       "sigungu": "Thành phố / quận / huyện",
+      "hasChildren": "Bạn có con không?",
       "childBirthDate": "Ngày sinh của con",
       "childNationality": "Quốc tịch của con",
       "householdSize": "Số thành viên hộ gia đình",
@@ -35,8 +36,12 @@
       "select": "Vui lòng chọn",
       "date": "Năm-Tháng-Ngày"
     },
+    "date": { "year": "Năm", "month": "Tháng", "day": "Ngày", "monthValue": "Tháng {{value}}", "dayValue": "Ngày {{value}}" },
+    "householdMembers": "{{count}} người",
     "skipTag": "Bỏ qua xác nhận",
-    "atLeastOne": "Vui lòng điền ít nhất một trong hai mục trên."
+    "atLeastOne": "Vui lòng điền ít nhất một trong hai mục trên.",
+    "oneTrackOnly": "Vui lòng chỉ nhập ngày sinh của con hoặc ngày xảy ra tai nạn.",
+    "futureDate": "Không thể chọn ngày sau hôm nay."
   },
   "sidebar": {
     "returnToChat": "Tư vấn AI hiện tại",
@@ -52,7 +57,11 @@
     },
     "filterChipClear": "Xóa bộ lọc",
     "emptyState": "Chưa có chương trình nào được đề xuất. Hãy bắt đầu trò chuyện với AI.",
-    "applicationInProgress": "Đang soạn đơn đăng ký"
+    "applicationInProgress": "Đang soạn đơn đăng ký",
+    "filters": {
+      "keys": { "benefitType": "Loại hỗ trợ", "region": "Khu vực", "eligibility": "Tình trạng đủ điều kiện" },
+      "values": { "CASH": "Hỗ trợ tiền mặt", "SERVICE": "Hỗ trợ dịch vụ", "ALL": "Tất cả" }
+    }
   },
   "chat": {
     "title": "Tư vấn phúc lợi AI",
@@ -83,6 +92,7 @@
       "unmetConditions": "Tình trạng đáp ứng điều kiện",
       "applicationChannel": "Cách đăng ký",
       "applicationOrg": "Cơ quan tiếp nhận",
+      "defaultApplicationOrg": "Cơ quan hành chính có thẩm quyền",
       "requiredDocuments": "Giấy tờ cần thiết",
       "deadline": "Hạn đăng ký",
       "sourceOriginal": "Văn bản gốc tiếng Hàn",
@@ -151,6 +161,8 @@
     "required": "Đây là mục bắt buộc."
   },
   "common": {
+    "yes": "Có",
+    "no": "Không",
     "close": "Đóng",
     "back": "Quay lại",
     "next": "Tiếp theo",

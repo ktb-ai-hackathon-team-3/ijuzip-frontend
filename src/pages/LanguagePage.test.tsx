@@ -33,11 +33,11 @@ describe('LanguagePage — §6: the only language switcher, and it retranslates 
 
   it('clicking a language tile retranslates the page copy immediately, before "start" is pressed', async () => {
     renderPage();
-    expect(screen.getByText(/안녕하세요, IJU\.zip이에요\./)).toBeInTheDocument();
+    expect(screen.getByText(/낯선 한국 생활에/)).toBeInTheDocument();
 
     await userEvent.click(screen.getByRole('radio', { name: /Tiếng Việt/ }));
 
-    expect(await screen.findByText(/Xin chào, tôi là IJU\.zip\./)).toBeInTheDocument();
+    expect(await screen.findByText(/Hướng dẫn thân thiện/)).toBeInTheDocument();
   });
 
   it('stores the chosen language in onboardingStore only after "start" is pressed', async () => {

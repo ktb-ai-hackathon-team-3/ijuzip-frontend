@@ -1,10 +1,10 @@
 {
   "app": { "name": "IJU.zip" },
   "language": {
-    "title1": "안녕하세요, IJU.zip이에요.",
-    "title2": "무엇을 도와드릴까요?",
-    "subtitle1": "선호하는 언어를 선택해주세요.",
-    "subtitle2": "회원님의 상황에 맞는 복지 제도를 찾고 신청까지 도와드려요.",
+    "title1": "낯선 한국 생활에",
+    "title2": "다정한 안내를.",
+    "subtitle1": "나의 상황에 맞는 복지 제도를 찾고,",
+    "subtitle2": "신청까지 한 걸음씩 함께해요.",
     "startBtn": "선택한 언어로 시작하기"
   },
   "onboarding": {
@@ -12,7 +12,7 @@
     "title1": "회원님에게 꼭 맞는 지원을 찾기 위해",
     "title2": "기본 정보를 알려주세요",
     "subtitle": "입력하신 정보는 맞춤 제도를 찾는 데 사용돼요.",
-    "trackHint": "아래 두 항목 중 회원님 상황에 해당하는 쪽만 입력해주세요. 나머지 하나는 비워두셔도 돼요.",
+    "trackHint": "어떤 지원을 찾고 계신가요? 한 가지 분야를 선택하면 필요한 항목만 보여드릴게요.",
     "sectionBirth": "임신·출산·육아",
     "sectionLabor": "산재·근로",
     "optionalTag": "선택",
@@ -24,6 +24,7 @@
       "region": "거주 지역",
       "sido": "시/도",
       "sigungu": "시·군·구",
+      "hasChildren": "자녀가 있으신가요?",
       "childBirthDate": "자녀 출생일",
       "childNationality": "자녀 국적",
       "householdSize": "가구원 수",
@@ -35,8 +36,12 @@
       "select": "선택해주세요",
       "date": "연도-월-일"
     },
+    "date": { "year": "연도", "month": "월", "day": "일", "monthValue": "{{value}}월", "dayValue": "{{value}}일" },
+    "householdMembers": "{{count}}명",
     "skipTag": "확인 생략",
-    "atLeastOne": "위 두 항목 중 하나는 입력해주세요."
+    "atLeastOne": "위 두 항목 중 하나는 입력해주세요.",
+    "oneTrackOnly": "자녀 출생일과 재해 발생일 중 하나만 입력해주세요.",
+    "futureDate": "오늘 이후 날짜는 선택할 수 없어요."
   },
   "sidebar": {
     "returnToChat": "현재 AI 복지 상담",
@@ -52,7 +57,11 @@
     },
     "filterChipClear": "필터 해제",
     "emptyState": "아직 추천된 제도가 없어요. AI와 대화를 시작해보세요.",
-    "applicationInProgress": "신청서 작성 중"
+    "applicationInProgress": "신청서 작성 중",
+    "filters": {
+      "keys": { "benefitType": "지원 유형", "region": "지역", "eligibility": "자격 상태" },
+      "values": { "CASH": "현금 지원", "SERVICE": "서비스 지원", "ALL": "전체" }
+    }
   },
   "chat": {
     "title": "AI 복지 상담",
@@ -83,6 +92,7 @@
       "unmetConditions": "충족 여부",
       "applicationChannel": "신청 방법",
       "applicationOrg": "신청 기관",
+      "defaultApplicationOrg": "관할 행정기관",
       "requiredDocuments": "필요 서류",
       "deadline": "신청 기한",
       "sourceOriginal": "한국어 원문",
@@ -151,6 +161,8 @@
     "required": "필수 입력 항목이에요."
   },
   "common": {
+    "yes": "있어요",
+    "no": "없어요",
     "close": "닫기",
     "back": "이전",
     "next": "다음",

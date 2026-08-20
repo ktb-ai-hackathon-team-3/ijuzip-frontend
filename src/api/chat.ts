@@ -90,7 +90,12 @@ export async function sendChatMessage(
               handlers.onDone({
                 quickReplies: ((raw as any).quickReplies ?? []).map((item: any) => ({
                   value: item.value,
-                  label: typeof item.label === 'string' ? { ko: item.label, user: item.label } : item.label,
+                  label: typeof item.label === 'string'
+                    ? {
+                        ko: item.labelKo ?? item.label,
+                        user: item.labelLocal ?? item.label,
+                      }
+                    : item.label,
                 })),
               });
               break;

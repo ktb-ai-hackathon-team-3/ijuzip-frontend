@@ -12,13 +12,17 @@ export interface BackendResult {
   amountDescLocal?: string;
   reasonKo?: string;
   reasonLocal?: string;
-  checks?: Array<{ field: string; fieldLabelKo: string; required?: string; actual?: string; result: string }>;
+  checks?: Array<{ field: string; fieldLabelKo: string; fieldLabelLocal?: string; required?: string; actual?: string; result: string }>;
   sourceSnippet?: string;
   sourceUrl?: string;
   lawReference?: string;
   requiredDocuments?: string[];
+  requiredDocumentsLocal?: string[];
   lastVerified?: string;
   deadlineDesc?: string;
+  deadlineDescLocal?: string;
+  applicationOrgKo?: string;
+  applicationOrgLocal?: string;
   formId?: string;
   formCheckbox?: string;
 }
@@ -45,46 +49,29 @@ export function incomeBandToBackend(code: string | null | undefined) {
   return code ? code.toLowerCase() : null;
 }
 
-export function trackToBackend(track: Track) {
-  return track === 'BIRTH_CARE' ? 'birth_care' : 'labor_injury';
-}
-
 export function trackFromBackend(track: string): Track {
   return track.toLowerCase() === 'labor_injury' ? 'LABOR_INJURY' : 'BIRTH_CARE';
 }
 
-function monthsSince(dateText: string | null): number | null {
-  if (!dateText) return null;
-  const date = new Date(`${dateText}T00:00:00`);
-  if (Number.isNaN(date.getTime())) return null;
-  const now = new Date();
-  return Math.max(0, (now.getFullYear() - date.getFullYear()) * 12 + now.getMonth() - date.getMonth());
-}
-
-export function toBackendSessionRequest(req: { language: Language; track: Track; profile: Omit<Profile, 'track' | 'language'> }) {
+export function toBackendSessionRequest(req: { language: Language; profile: Omit<Profile, 'track' | 'language'>; hasChildren: boolean | null }) {
   return {
-    track: trackToBackend(req.track),
     profile: {
       lang: req.language,
       region: req.profile.region,
       visaStatus: req.profile.visaStatus,
       spouseIsKorean: null,
-      children: req.track === 'BIRTH_CARE'
-        ? [{ ageMonths: monthsSince(req.profile.childBirthDate), nationality: req.profile.childNationality }]
-        : [],
+      children: req.hasChildren ? [{}] : [],
       registered: null,
       residencyMonths: null,
       householdSize: req.profile.householdSize,
       incomeBand: incomeBandToBackend(req.profile.incomeBand),
-      employment: req.track === 'LABOR_INJURY'
-        ? { employed: req.profile.employmentStatus !== 'UNEMPLOYED', insured: null }
-        : null,
+      employment: null,
       healthInsurance: null,
       // The dates the user actually typed. `children[].ageMonths` is derived
       // from `childBirthDate` and cannot be inverted, and `injuryDate` was not
       // sent at all — so after a refresh both form fields came back empty.
-      childBirthDate: req.track === 'BIRTH_CARE' ? req.profile.childBirthDate : null,
-      injuryDate: req.track === 'LABOR_INJURY' ? req.profile.injuryDate : null,
+      childBirthDate: null,
+      injuryDate: null,
     },
   };
 }
@@ -118,11 +105,13 @@ export function buildCreateSessionResponse(
   skeleton: { candidates?: Array<{ recordId: string; status?: string }>; funnel?: CreateSessionResponse['funnel'] },
   results: BackendResult[] | null,
   language: Language,
-  track: Track,
+  track?: Track,
 ): CreateSessionResponse {
-  const greetingKo = track === 'BIRTH_CARE'
-    ? '입력하신 정보를 바탕으로 받을 수 있는 출산·돌봄 제도를 찾아봤어요.'
-    : '입력하신 정보를 바탕으로 도움받을 수 있는 근로·산재 제도를 찾아봤어요.';
+  const greetingKo = track
+    ? (track === 'BIRTH_CARE'
+      ? '입력하신 정보를 바탕으로 받을 수 있는 출산·돌봄 제도를 찾아봤어요.'
+      : '입력하신 정보를 바탕으로 도움받을 수 있는 근로·산재 제도를 찾아봤어요.')
+    : '입력하신 정보를 바탕으로 회원님에게 맞는 복지 제도를 찾아봤어요.';
   const greetingUserByLanguage: Record<Language, Record<Track, string>> = {
     ko: {
       BIRTH_CARE: '입력하신 정보를 바탕으로 받을 수 있는 출산·돌봄 제도를 찾아봤어요.',
@@ -141,7 +130,13 @@ export function buildCreateSessionResponse(
       LABOR_INJURY: 'Based on your information, I found employment and workplace-injury support programs that may fit your situation.',
     },
   };
-  const greetingUser = greetingUserByLanguage[language][track];
+  const generalGreeting: Record<Language, string> = {
+    ko: greetingKo,
+    vi: 'Dựa trên thông tin bạn cung cấp, tôi đã tìm các chương trình phúc lợi phù hợp với bạn.',
+    km: 'ផ្អែកលើព័ត៌មានដែលអ្នកបានផ្តល់ ខ្ញុំបានស្វែងរកកម្មវិធីសុខុមាលភាពដែលសមស្របសម្រាប់អ្នក។',
+    en: 'Based on your information, I found welfare programs that may fit your situation.',
+  };
+  const greetingUser = track ? greetingUserByLanguage[language][track] : generalGreeting[language];
   return {
     ...session,
     greeting: { ko: greetingKo, user: greetingUser },
@@ -195,7 +190,7 @@ function messageFromBackend(raw: any): Message {
 }
 
 export function snapshotFromBackend(raw: any): SessionSnapshot {
-  const track = trackFromBackend(raw.track);
+  const track = raw.track ? trackFromBackend(raw.track) : 'BIRTH_CARE';
   const results: BackendResult[] = raw.assessment?.results ?? [];
   const candidates = resultsToCandidates(results);
   const view = viewFromBackend(raw.view);
@@ -215,10 +210,11 @@ export function programDetailFromBackend(raw: BackendResult): ProgramDetail {
     name: local(raw.nameKo, raw.nameLocal),
     summary: local(raw.reasonKo, raw.reasonLocal),
     benefit: local(raw.amountDescKo, raw.amountDescLocal),
-    conditionsText: (raw.checks ?? []).map((check) => local(check.fieldLabelKo)),
+    conditionsText: (raw.checks ?? []).map((check) => local(check.fieldLabelKo, check.fieldLabelLocal)),
     evidence: { sourceSnippet: raw.sourceSnippet ?? '', sourceUrl: raw.sourceUrl ?? '', lastVerified: raw.lastVerified ?? '' },
-    applicationChannel: 'VISIT', applicationOrg: local('관할 행정기관'),
-    requiredDocuments: (raw.requiredDocuments ?? []).map((doc) => local(doc)), deadline: raw.deadlineDesc ?? '',
+    applicationChannel: 'VISIT', applicationOrg: local(raw.applicationOrgKo ?? '관할 행정기관', raw.applicationOrgLocal),
+    requiredDocuments: (raw.requiredDocuments ?? []).map((doc, index) => local(doc, raw.requiredDocumentsLocal?.[index])),
+    deadline: raw.deadlineDescLocal ?? raw.deadlineDesc ?? '',
   };
 }
 
@@ -228,7 +224,7 @@ export function verdictFromBackend(raw: BackendResult): ProgramVerdict {
     programId: raw.recordId, verdict, confidence: verdict === 'NEEDS_CHECK' ? 0.5 : 0.9,
     reason: local(raw.reasonKo, raw.reasonLocal),
     unmetConditions: (raw.checks ?? []).map((check) => ({
-      condition: local(check.fieldLabelKo), userValue: check.actual ?? '',
+      condition: local(check.fieldLabelKo, check.fieldLabelLocal), userValue: check.actual ?? '',
       status: check.result === 'pass' ? 'MET' : check.result === 'fail' ? 'UNMET' : 'UNKNOWN',
     })),
     benefit: local(raw.amountDescKo, raw.amountDescLocal),
@@ -264,6 +260,7 @@ export function applicationFromBackend(raw: any): Application {
     })),
     fields: Object.fromEntries(Object.entries(raw.fields ?? {}).map(([key, value]) => [key, fieldFromBackend(key, value, missing)])),
     fieldLabels: Object.fromEntries(Object.entries(raw.fieldLabels ?? {}).map(([key, value]: [string, any]) => [key, local(value.ko, value.local)])),
+    previewImages: raw.previewImages ?? raw.previewImageUrls ?? raw.formPreviewUrls ?? [],
   };
 }
 

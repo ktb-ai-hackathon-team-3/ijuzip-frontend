@@ -5,7 +5,6 @@ import { Loader2, MessageCircle, PanelLeft, X as XIcon } from 'lucide-react';
 import { useSessionStore } from '../../stores/sessionStore';
 import { useUiStore } from '../../stores/uiStore';
 import { IconButton } from '../common/IconButton';
-import { MatchRing } from '../common/MatchRing';
 import { StatusBadge } from '../common/StatusBadge';
 import type { Candidate, ConditionStatus } from '../../api/types';
 import styles from './WelfareSidebar.module.css';
@@ -21,7 +20,7 @@ interface WelfareSidebarProps {
 }
 
 export function WelfareSidebar({ ariaLabel }: WelfareSidebarProps) {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -38,9 +37,10 @@ export function WelfareSidebar({ ariaLabel }: WelfareSidebarProps) {
 
   const byId = useMemo(() => new Map(candidates.map((c) => [c.programId, c])), [candidates]);
   const ordered: Candidate[] = useMemo(() => {
-    if (!view) return candidates;
-    const fromRanking = view.ranking.map((r) => byId.get(r.programId)).filter((c): c is Candidate => !!c);
-    const remaining = candidates.filter((c) => !view.ranking.some((r) => r.programId === c.programId));
+    const recommendable = candidates.filter((candidate) => candidate.conditionStatus !== 'BLOCKED');
+    if (!view) return recommendable;
+    const fromRanking = view.ranking.map((r) => byId.get(r.programId)).filter((c): c is Candidate => !!c && c.conditionStatus !== 'BLOCKED');
+    const remaining = recommendable.filter((c) => !view.ranking.some((r) => r.programId === c.programId));
     return [...fromRanking, ...remaining];
   }, [view, candidates, byId]);
 
@@ -53,7 +53,7 @@ export function WelfareSidebar({ ariaLabel }: WelfareSidebarProps) {
   }
 
   function handleReturnToChat() {
-    navigate('/consultation');
+    navigate('/consultation', { viewTransition: true });
     if (isMobile) closeMobileDrawer();
   }
 
@@ -68,12 +68,17 @@ export function WelfareSidebar({ ariaLabel }: WelfareSidebarProps) {
   const filterEntries = Object.entries(view?.viewFilter ?? {}).filter(([, v]) => v);
   const isChatRoute = location.pathname === '/consultation';
 
+  function translatedFilter(part: 'keys' | 'values', value: string) {
+    const key = `sidebar.filters.${part}.${value}`;
+    return i18n.exists(key) ? t(key) : value;
+  }
+
   return (
     <aside className={styles.sidebar} aria-label={ariaLabel}>
       <div className={styles.sidebarInner}>
         <div className={styles.head}>
           <div className={styles.brand}>
-            <div className={styles.brandMark}>I</div>
+            <div className={styles.brandMark} aria-hidden="true"><span /><span /></div>
             <div className={styles.brandName}>{t('app.name')}</div>
           </div>
           <IconButton icon={<PanelLeft size={17} />} label={t('common.toggleSidebar')} onClick={toggleSidebar} />
@@ -101,7 +106,7 @@ export function WelfareSidebar({ ariaLabel }: WelfareSidebarProps) {
           <div className={styles.filterChips}>
             {filterEntries.map(([key, value]) => (
               <button key={key} className={styles.filterChip} onClick={clearFilter} aria-label={t('sidebar.filterChipClear')}>
-                {key}: {value}
+                {translatedFilter('keys', key)}: {translatedFilter('values', String(value))}
                 <XIcon size={12} aria-hidden="true" />
               </button>
             ))}
@@ -120,16 +125,13 @@ export function WelfareSidebar({ ariaLabel }: WelfareSidebarProps) {
                 data-blocked={candidate.conditionStatus === 'BLOCKED'}
                 onClick={() => handleOpenItem(candidate.programId)}
               >
-                <MatchRing score={candidate.baseScore} size={30} />
                 <span className={styles.rowText}>
                   <span className={styles.itemTitleRow}>
                     <span className={styles.itemTitle}>{candidate.name.user}</span>
                   </span>
-                  {candidate.conditionStatus !== 'LIKELY' && (
-                    <span className={styles.itemMetaRow}>
-                      <StatusBadge tone={CONDITION_TONE[candidate.conditionStatus]} label={t(`sidebar.conditionStatus.${candidate.conditionStatus}`)} />
-                    </span>
-                  )}
+                  <span className={styles.itemMetaRow}>
+                    <StatusBadge tone={CONDITION_TONE[candidate.conditionStatus]} label={t(`sidebar.conditionStatus.${candidate.conditionStatus}`)} />
+                  </span>
                 </span>
               </button>
             );

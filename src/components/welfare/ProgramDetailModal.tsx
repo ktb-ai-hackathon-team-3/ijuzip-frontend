@@ -61,7 +61,7 @@ export function ProgramDetailModal({ programId }: ProgramDetailModalProps) {
     try {
       const app = await createApplication.mutateAsync([programId]);
       closeDetailModal();
-      navigate(`/applications/${app.applicationId}`);
+      navigate(`/applications/${app.applicationId}`, { viewTransition: true });
     } catch {
       pushToast(t('application.formIdMismatch'), 'error');
     }
@@ -170,7 +170,11 @@ export function ProgramDetailModal({ programId }: ProgramDetailModalProps) {
           </div>
           <div className={styles.row}>
             <span className={styles.lbl}>{t('welfare.modal.applicationOrg')}</span>
-            <span className={styles.val}>{detailQuery.data.applicationOrg.user}</span>
+            <span className={styles.val}>
+              {detailQuery.data.applicationOrg.user === '관할 행정기관'
+                ? t('welfare.modal.defaultApplicationOrg')
+                : detailQuery.data.applicationOrg.user}
+            </span>
           </div>
           <div className={styles.row}>
             <span className={styles.lbl}>{t('welfare.modal.requiredDocuments')}</span>

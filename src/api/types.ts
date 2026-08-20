@@ -214,6 +214,8 @@ export interface Application {
   checkedPrograms: CheckedProgram[];
   fields: FieldMap;
   fieldLabels: FieldLabelMap;
+  /** Ordered scanned-form preview pages. One URL per page. */
+  previewImages?: string[];
 }
 
 export interface Funnel {

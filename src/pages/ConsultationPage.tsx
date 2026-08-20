@@ -6,7 +6,7 @@ import { Composer } from '../components/chat/Composer';
 import { useChat } from '../hooks/useChat';
 import { useSessionStore } from '../stores/sessionStore';
 import { useUiStore } from '../stores/uiStore';
-import { VISA_OPTIONS, REGION_OPTIONS, NATIONALITY_OPTIONS } from '../i18n/optionData';
+import { VISA_OPTIONS, REGION_OPTIONS, NATIONALITY_OPTIONS, districtLabel } from '../i18n/optionData';
 import type { Language } from '../api/types';
 
 function labelFor(list: { code: string; label: Record<Language, string> }[], code: string | null, lang: Language) {
@@ -22,7 +22,7 @@ export function ConsultationPage() {
   const subtitle = profile
     ? [
         labelFor(VISA_OPTIONS, profile.visaStatus, lang),
-        `${REGION_OPTIONS.find((r) => r.name === profile.region.sido)?.label[lang] ?? profile.region.sido} ${profile.region.sigungu}`,
+        `${REGION_OPTIONS.find((r) => r.name === profile.region.sido)?.label[lang] ?? profile.region.sido} ${districtLabel(profile.region.sigungu, lang)}`,
         profile.childNationality ? labelFor(NATIONALITY_OPTIONS, profile.childNationality, lang) : null,
       ]
         .filter(Boolean)

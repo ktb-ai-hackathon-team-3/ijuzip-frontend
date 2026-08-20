@@ -35,12 +35,21 @@ function SessionExpiryListener() {
   return null;
 }
 
+function DocumentLanguageSync() {
+  const { i18n } = useTranslation();
+  useEffect(() => {
+    document.documentElement.lang = i18n.resolvedLanguage ?? i18n.language;
+  }, [i18n, i18n.language, i18n.resolvedLanguage]);
+  return null;
+}
+
 export default function App() {
   const bootstrapStatus = useSessionBootstrap();
 
   return (
     <QueryClientProvider client={queryClient}>
       <SessionExpiryListener />
+      <DocumentLanguageSync />
       {bootstrapStatus === 'idle' || bootstrapStatus === 'restoring' ? <AppShellLoading /> : <AppRouter />}
       <ToastViewport />
     </QueryClientProvider>

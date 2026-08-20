@@ -1,13 +1,13 @@
 .topbar {
-  height: 60px;
+  height: 64px;
   flex-shrink: 0;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0 var(--space-5);
+  padding: 0 24px;
   border-bottom: 1px solid var(--border);
   background: var(--surface);
-  box-shadow: 0 1px 8px rgba(20, 24, 18, 0.04);
+  box-shadow: 0 8px 24px rgba(35, 67, 54, 0.05);
   position: relative;
   z-index: 5;
 }
@@ -20,18 +20,21 @@
 }
 
 .brandMark {
-  width: 26px;
+  width: 21px;
   height: 26px;
-  border-radius: 7px;
-  background: var(--green-900);
-  color: var(--surface);
   display: flex;
-  align-items: center;
-  justify-content: center;
-  font-weight: 700;
-  font-size: 13px;
+  align-items: flex-end;
+  gap: 3px;
   flex-shrink: 0;
 }
+.brandMark span {
+  display: block;
+  width: 9px;
+  border-radius: 5px 5px 3px 3px;
+  background: var(--green-800);
+}
+.brandMark span:first-child { height: 19px; }
+.brandMark span:last-child { height: 26px; background: #768cab; }
 
 .titleWrap {
   min-width: 0;
@@ -39,7 +42,8 @@
 
 .title {
   font-size: 15px;
-  font-weight: 600;
+  font-weight: 700;
+  letter-spacing: -.02em;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;

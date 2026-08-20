@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Navigate, useParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { FileText, LockKeyhole } from 'lucide-react';
+import { ChevronLeft, ChevronRight, FileText, LockKeyhole } from 'lucide-react';
 import { AppShell } from '../components/app-shell/AppShell';
 import { Topbar } from '../components/app-shell/Topbar';
 import { Button } from '../components/common/Button';
@@ -34,6 +34,7 @@ export function ApplicationPage() {
   const pushToast = useUiStore((s) => s.pushToast);
 
   const [values, setValues] = useState<Record<string, string>>({});
+  const [previewPage, setPreviewPage] = useState(0);
 
   useEffect(() => {
     if (!applicationQuery.data) return;
@@ -43,6 +44,10 @@ export function ApplicationPage() {
     }
     setValues(initial);
   }, [applicationQuery.data]);
+
+  useEffect(() => {
+    setPreviewPage(0);
+  }, [appId, applicationQuery.data?.previewImages?.length]);
 
   if (!appId) {
     return <Navigate to="/consultation" replace />;
@@ -91,6 +96,8 @@ export function ApplicationPage() {
   }
 
   const data = applicationQuery.data;
+  const previewImages = data?.previewImages ?? [];
+  const hasMultiplePreviewPages = previewImages.length > 1;
   const unverifiedLabels = data
     ? Object.entries(data.fields)
         .filter(([, field]) => field.status === 'UNVERIFIED')
@@ -108,8 +115,39 @@ export function ApplicationPage() {
                 once the real scanned-form asset is wired up — the aspect-ratio
                 box and border are already sized to hold it. */}
             <div className={styles.previewImageSlot}>
-              <FileText size={36} className={styles.previewIcon} aria-hidden="true" />
-              <div className={styles.previewTitle}>{data?.formTitle.user ?? <Skeleton width={160} />}</div>
+              {previewImages.length > 0 ? (
+                <img
+                  className={styles.previewImage}
+                  src={previewImages[previewPage]}
+                  alt={`${data?.formTitle.user ?? t('application.title')} ${previewPage + 1}`}
+                />
+              ) : (
+                <>
+                  <FileText size={36} className={styles.previewIcon} aria-hidden="true" />
+                  <div className={styles.previewTitle}>{data?.formTitle.user ?? <Skeleton width={160} />}</div>
+                </>
+              )}
+              {hasMultiplePreviewPages && (
+                <>
+                  <button
+                    type="button"
+                    className={`${styles.previewNav} ${styles.previewPrev}`}
+                    aria-label={t('common.back')}
+                    onClick={() => setPreviewPage((page) => (page - 1 + previewImages.length) % previewImages.length)}
+                  >
+                    <ChevronLeft size={17} aria-hidden="true" />
+                  </button>
+                  <button
+                    type="button"
+                    className={`${styles.previewNav} ${styles.previewNext}`}
+                    aria-label={t('common.next')}
+                    onClick={() => setPreviewPage((page) => (page + 1) % previewImages.length)}
+                  >
+                    <ChevronRight size={17} aria-hidden="true" />
+                  </button>
+                  <span className={styles.previewPageCount}>{previewPage + 1} / {previewImages.length}</span>
+                </>
+              )}
             </div>
             {data && (
               <div className={styles.checkedList}>

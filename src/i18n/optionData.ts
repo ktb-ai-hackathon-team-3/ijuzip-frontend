@@ -78,3 +78,40 @@ export const REGION_OPTIONS: RegionOption[] = [
   { code: 'gyeongnam', name: '경상남도', label: { ko: '경상남도', vi: 'Gyeongsangnam-do', km: 'ខេត្តគ្យុងសាងណាំ', en: 'Gyeongsangnam-do' }, districts: ['창원시','진주시','통영시','사천시','김해시','밀양시','거제시','양산시','의령군','함안군','창녕군','고성군','남해군','하동군','산청군','함양군','거창군','합천군'] },
   { code: 'jeju', name: '제주특별자치도', label: { ko: '제주특별자치도', vi: 'Jeju-do', km: 'ខេត្តជេជូ', en: 'Jeju-do' }, districts: ['제주시','서귀포시'] },
 ];
+
+const INITIAL = ['g','kk','n','d','tt','r','m','b','pp','s','ss','','j','jj','ch','k','t','p','h'];
+const MEDIAL = ['a','ae','ya','yae','eo','e','yeo','ye','o','wa','wae','oe','yo','u','wo','we','wi','yu','eu','ui','i'];
+const FINAL = ['', 'k','k','ks','n','nj','nh','t','l','lk','lm','lb','ls','lt','lp','lh','m','p','ps','t','t','ng','t','t','k','t','p','h'];
+
+function romanizeHangul(value: string) {
+  return value.split('').map((char) => {
+    const offset = char.charCodeAt(0) - 0xac00;
+    if (offset < 0 || offset > 11171) return char;
+    const initial = Math.floor(offset / 588);
+    const medial = Math.floor((offset % 588) / 28);
+    const final = offset % 28;
+    return `${INITIAL[initial]}${MEDIAL[medial]}${FINAL[final]}`;
+  }).join('')
+    .replace(/ngr/g, 'ngn')
+    .replace(/nr/g, 'll')
+    .replace(/lr/g, 'll')
+    .replace(/^./, (letter) => letter.toUpperCase());
+}
+
+/** The visible label is localized, while the official Korean value is still submitted to Spring. */
+export function districtLabel(district: string, language: Language) {
+  if (language === 'ko') return district;
+  const suffix = district.endsWith('구') ? '구' : district.endsWith('군') ? '군' : district.endsWith('시') ? '시' : '';
+  const base = suffix ? district.slice(0, -1) : district;
+  const romanized = romanizeHangul(base);
+  if (language === 'vi') {
+    const prefix = suffix === '구' ? 'Quận' : suffix === '군' ? 'Huyện' : suffix === '시' ? 'Thành phố' : '';
+    return `${prefix} ${romanized}`.trim();
+  }
+  if (language === 'km') {
+    const prefix = suffix === '구' ? 'ខណ្ឌ' : suffix === '군' ? 'ស្រុក' : suffix === '시' ? 'ទីក្រុង' : '';
+    return `${prefix} ${romanized}`.trim();
+  }
+  const suffixEn = suffix === '구' ? '-gu' : suffix === '군' ? '-gun' : suffix === '시' ? '-si' : '';
+  return `${romanized}${suffixEn}`;
+}
