@@ -34,6 +34,7 @@ export const profileSchema = z.object({
 
 export const candidateSchema = z.object({
   programId: z.string(),
+  name: localizedTextSchema,
   baseScore: z.number(),
   conditionStatus: z.enum(['LIKELY', 'NEED_INFO', 'BLOCKED']),
   missingSlots: z.array(z.string()),

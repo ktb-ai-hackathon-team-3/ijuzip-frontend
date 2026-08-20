@@ -99,7 +99,7 @@ function hashScore(seed: string): number {
   return (h % 15) / 100; // 0.00 – 0.14
 }
 
-function scoreCandidate(program: MockProgram, profile: Profile): Candidate {
+function scoreCandidate(program: MockProgram, profile: Profile, language: Language = 'ko'): Candidate {
   const missingSlots: string[] = [];
   let blocked = false;
 
@@ -134,6 +134,7 @@ function scoreCandidate(program: MockProgram, profile: Profile): Candidate {
 
   return {
     programId: program.programId,
+    name: localize(program.name, language),
     baseScore: Math.min(0.97, base + hashScore(program.programId)),
     conditionStatus,
     missingSlots,
@@ -143,7 +144,7 @@ function scoreCandidate(program: MockProgram, profile: Profile): Candidate {
 export function mockBuildCandidates(track: Track, profile: Profile) {
   const trackPrograms = MOCK_PROGRAMS.filter((p) => p.track === track);
   const candidates = trackPrograms
-    .map((program) => scoreCandidate(program, profile))
+    .map((program) => scoreCandidate(program, profile, profile.language))
     .sort((a, b) => b.baseScore - a.baseScore);
   const funnel = {
     total: 312,
@@ -503,7 +504,10 @@ export async function mockCreateApplication(sid: string, token: string | null, p
     applicationId,
     formId,
     formTitle: FORM_TITLES[formId] ? localize(FORM_TITLES[formId], session.language) : { ko: formId, user: formId },
-    checkedPrograms: programs.map((p) => ({ programId: p.programId, formCheckbox: p.formCheckbox })),
+    checkedPrograms: programs.map((p) => ({
+      programId: p.programId, formCheckbox: p.formCheckbox,
+      name: localize(p.name, session.language),
+    })),
     fields,
     fieldLabels,
   };
@@ -555,7 +559,13 @@ export async function mockGetApplication(appId: string, token: string | null) {
     applicationId: app.applicationId,
     formId: app.formId,
     formTitle: FORM_TITLES[app.formId] ? localize(FORM_TITLES[app.formId], session.language) : { ko: app.formId, user: app.formId },
-    checkedPrograms: app.programIds.map((id) => ({ programId: id, formCheckbox: findMockProgram(id)?.formCheckbox ?? '' })),
+    checkedPrograms: app.programIds.map((id) => {
+      const program = findMockProgram(id);
+      return {
+        programId: id, formCheckbox: program?.formCheckbox ?? '',
+        name: program ? localize(program.name, session.language) : { ko: id, user: id },
+      };
+    }),
     fields: maskedFields,
     fieldLabels: buildFieldLabels(app, session.language),
   };

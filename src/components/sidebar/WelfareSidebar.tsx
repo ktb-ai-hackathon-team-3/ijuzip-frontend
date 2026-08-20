@@ -4,7 +4,6 @@ import { useTranslation } from 'react-i18next';
 import { Loader2, MessageCircle, PanelLeft, X as XIcon } from 'lucide-react';
 import { useSessionStore } from '../../stores/sessionStore';
 import { useUiStore } from '../../stores/uiStore';
-import { useProgramNames } from '../../hooks/useProgramNames';
 import { IconButton } from '../common/IconButton';
 import { MatchRing } from '../common/MatchRing';
 import { StatusBadge } from '../common/StatusBadge';
@@ -47,7 +46,6 @@ export function WelfareSidebar({ ariaLabel }: WelfareSidebarProps) {
 
   const visibleCount = expanded ? ordered.length : (view?.visibleCount ?? 5);
   const visible = ordered.slice(0, visibleCount);
-  const names = useProgramNames(visible.map((c) => c.programId));
 
   function handleOpenItem(programId: string) {
     openDetailModal(programId);
@@ -114,8 +112,6 @@ export function WelfareSidebar({ ariaLabel }: WelfareSidebarProps) {
           {ordered.length === 0 && <p className={styles.emptyState}>{t('sidebar.emptyState')}</p>}
 
           {visible.map((candidate) => {
-            const nameQuery = names.get(candidate.programId);
-            const title = nameQuery?.data?.name.user ?? '';
             return (
               <button
                 key={candidate.programId}
@@ -127,7 +123,7 @@ export function WelfareSidebar({ ariaLabel }: WelfareSidebarProps) {
                 <MatchRing score={candidate.baseScore} size={30} />
                 <span className={styles.rowText}>
                   <span className={styles.itemTitleRow}>
-                    <span className={styles.itemTitle}>{nameQuery?.isLoading ? t('common.loading') : title}</span>
+                    <span className={styles.itemTitle}>{candidate.name.user}</span>
                   </span>
                   {candidate.conditionStatus !== 'LIKELY' && (
                     <span className={styles.itemMetaRow}>

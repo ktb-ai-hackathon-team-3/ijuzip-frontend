@@ -110,6 +110,7 @@
       "PROTECTED_PREFILLED": "확인 필요"
     },
     "protectedNotice": "민감정보는 이 화면에서만 사용되며 AI에게 전달되지 않아요.",
+    "koreanOnlyWarning": "한국어 또는 외국인등록증에 적힌 로마자로 입력해주세요. 신청서에는 한국어로 인쇄됩니다. ({{chars}})",
     "generatePdf": "PDF 생성하기",
     "generatingPdf": "생성 중…",
     "notReadyForPdf": "PDF를 만들기 전에 필수 항목을 입력해주세요.",

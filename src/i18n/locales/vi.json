@@ -110,6 +110,7 @@
       "PROTECTED_PREFILLED": "Cần xác nhận"
     },
     "protectedNotice": "Thông tin nhạy cảm chỉ được dùng ở màn hình này và không được gửi tới AI.",
+    "koreanOnlyWarning": "Vui lòng nhập bằng tiếng Hàn hoặc chữ Latinh như trên thẻ đăng ký người nước ngoài. Đơn sẽ được in bằng tiếng Hàn. ({{chars}})",
     "generatePdf": "Tạo PDF",
     "generatingPdf": "Đang tạo…",
     "notReadyForPdf": "Vui lòng nhập các mục bắt buộc trước khi tạo PDF.",

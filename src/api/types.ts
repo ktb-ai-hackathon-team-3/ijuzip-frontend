@@ -46,6 +46,12 @@ export type ConditionStatus = 'LIKELY' | 'NEED_INFO' | 'BLOCKED';
 /** §5.2 — 온보딩 시 1회 확정, 세션 내내 고정. 대화는 순서·가시성만 바꾼다. */
 export interface Candidate {
   programId: string;
+  /**
+   * Display name. Spring sends this on both the `skeleton` and `results`
+   * events; the sidebar used to drop it and re-fetch one `GET /programs/{id}`
+   * per visible row just to get the name back.
+   */
+  name: LocalizedText;
   baseScore: number;
   conditionStatus: ConditionStatus;
   missingSlots: string[];
@@ -196,6 +202,8 @@ export interface FormFieldSpec {
 export interface CheckedProgram {
   programId: string;
   formCheckbox: string;
+  /** Display name in the session language. Falls back to the record id. */
+  name: LocalizedText;
 }
 
 /** §7.7 / §7.8 — 신청서 생성 및 조회 응답. */
